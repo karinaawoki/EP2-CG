@@ -165,8 +165,21 @@ window.onload = function init() {
     document.getElementById("ButtonSC").onclick = function(){smooth();};
 
     
-    object.onmousedown = function(event){pointerPos = [event.clientX, event.clientY];};
-    object.onmouseup   = function(event){desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];alert("MATT não pula linha");};
+    canvas.onmousedown = function(event){pointerPos = [event.clientX, event.clientY];};
+
+    canvas.onmouseup   = function(event){
+        var shiftPressed=0;
+        shiftPressed = event.shiftKey;
+        if(shiftPressed)
+        {
+            alert("SHIFT PRINTADO");
+        }
+        else
+        {
+            desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
+            alert("MATT não pula linha");
+        }
+    };
 
     document.getElementById('files').onchange = function (evt) {
         var obj;
