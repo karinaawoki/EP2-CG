@@ -165,7 +165,10 @@ window.onload = function init() {
     document.getElementById("ButtonSC").onclick = function(){smooth();};
 
     
-    canvas.onmousedown = function(event){pointerPos = [event.clientX, event.clientY];};
+    canvas.onmousedown = function(event){
+        pointerPos = [event.clientX, event.clientY];
+        
+    };
 
     canvas.onmouseup   = function(event){
         var shiftPressed=0;
@@ -176,6 +179,14 @@ window.onload = function init() {
         }
         else
         {
+            switch (event.which) {
+                case 1:
+                    //alert('Left Mouse button pressed.');
+                    break;
+                case 3:
+                    alert('Right Mouse button pressed.');
+                    break;
+                }
             desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
             alert("MATT não pula linha");
         }
