@@ -1,4 +1,4 @@
-function loadObjFile(data) {
+function loadObjFile(data,objects) {
 
   // TO DO:   (i) Parse OBJ file and extract vertices and normal vectors
   var fPosition = 0;
@@ -13,9 +13,9 @@ function loadObjFile(data) {
   faces = [];
   vertices = [];
   normals  = [];
-  //pointsArray  = []; 
-  //normalsArray = [];
-  normalsArrayCopy = [];
+  objobjPoints  = []; 
+  objNormals = [];
+  objNormalsCopy = [];
 
   while(fPosition < data.length)
   {
@@ -103,16 +103,16 @@ function loadObjFile(data) {
             vn = vec4(cross(t1, t2), 0);
 
             s = vertices[v1-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vn);
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vn);
 
             s = vertices[v2-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vn); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vn); 
 
             s = vertices[v3-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vn); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vn); 
 
             faces.push([v1-1, v2-1, v3-1]);
           }
@@ -161,28 +161,28 @@ function loadObjFile(data) {
             lengthAux += 6;
 
             s = vertices[v1-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vec4(n1[0], n1[1], n1[2], 0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vec4(n1[0], n1[1], n1[2], 0)); 
 
             s = vertices[v2-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vec4(n2[0], n2[1], n2[2], 0));  
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vec4(n2[0], n2[1], n2[2], 0));  
              
             s = vertices[v3-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vec4(n3[0], n3[1], n3[2], 0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vec4(n3[0], n3[1], n3[2], 0)); 
              
             s = vertices[v1-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1));  
-            normalsArray.push(vec4(n1[0], n1[1], n1[2], 0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1));  
+            objNormals.push(vec4(n1[0], n1[1], n1[2], 0)); 
                         
             s = vertices[v3-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vec4(n3[0], n3[1], n3[2], 0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vec4(n3[0], n3[1], n3[2], 0)); 
                       
             s = vertices[v4-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
-            normalsArray.push(vec4(n4[0], n4[1], n4[2], 0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1)); 
+            objNormals.push(vec4(n4[0], n4[1], n4[2], 0)); 
             
             faces.push([v1-1, v2-1, v3-1]);
             faces.push([v1-1, v3-1, v4-1]);  
@@ -193,16 +193,16 @@ function loadObjFile(data) {
           {
             lengthAux+=3;
             s = vertices[v1-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1.0)); 
-            normalsArray.push(vec4(n1[0], n1[1], n1[2], 0.0));
+            objPoints.push(vec4(s[0], s[1], s[2], 1.0)); 
+            objNormals.push(vec4(n1[0], n1[1], n1[2], 0.0));
 
             s = vertices[v2-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1.0)); 
-            normalsArray.push(vec4(n2[0], n2[1], n2[2], 0.0)); 
+            objPoints.push(vec4(s[0], s[1], s[2], 1.0)); 
+            objNormals.push(vec4(n2[0], n2[1], n2[2], 0.0)); 
 
             s = vertices[v3-1];
-            pointsArray.push(vec4(s[0], s[1], s[2], 1.0)); 
-            normalsArray.push(vec4(n3[0], n3[1], n3[2], 0.0));  
+            objPoints.push(vec4(s[0], s[1], s[2], 1.0)); 
+            objNormals.push(vec4(n3[0], n3[1], n3[2], 0.0));  
 
             faces.push([v1-1, v2-1, v3-1]);
           }
@@ -225,14 +225,21 @@ function loadObjFile(data) {
   lengthObjects.push(lengthAux);
   alert(lengthAux);
   // FAZENDO um backup do normalArray
-  for(var k = 0; smooth1 == 1 && k<normalsArray.length; k++)
+  for(var k = 0; smooth1 == 1 && k<objNormals.length; k++)
   {
-    var v = normalsArray[k];
-    normalsArrayCopy.push(vec4(v[0], v[1], v[2], v[3]));
+    var v = objNormals[k];
+    objNormalsCopy.push(vec4(v[0], v[1], v[2], v[3]));
   }
 
   meio = [(minX + maxX)/2.0, (minY + maxY)/2.0, (minZ + maxZ)/2.0];  
   diam.push(Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)));
+
+  var obj = {
+    var pointsArray = objPoints;
+    var normalsArray = objNormals;
+  }
+
+  objects.push(obj);
 
 }
 
