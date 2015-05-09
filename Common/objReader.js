@@ -6,14 +6,15 @@ function loadObjFile(data) {
   var line, p1, p2, k = 0;
   var maxX, minX, maxY, minY, maxZ, minZ;
   var smooth1 = 0;
+  var lengthAux = 0;
   meio = [];
 
   //We have to clean the vectors to delete the cube informations
   faces = [];
   vertices = [];
   normals  = [];
-  pointsArray  = []; 
-  normalsArray = [];
+  //pointsArray  = []; 
+  //normalsArray = [];
   normalsArrayCopy = [];
 
   while(fPosition < data.length)
@@ -86,6 +87,7 @@ function loadObjFile(data) {
           //face com 4 vertices
           if(p1!=-1 && p1 < lPosition)
           {
+            lengthAux+=6;
             v4 = readFace(p1+1, data, 0);
             quad(v1-1, v2-1, v3-1, v4-1);
           }
@@ -95,6 +97,7 @@ function loadObjFile(data) {
           {
             var s;
             var t1, t2, vn;
+            lengthAux += 3;
             t1 = subtract(vertices[v2-1], vertices[v1-1]);
             t2 = subtract(vertices[v3-1], vertices[v2-1]);
             vn = vec4(cross(t1, t2), 0);
@@ -155,6 +158,8 @@ function loadObjFile(data) {
             nv4 = parseInt(s)-1;
             n4 = normals[nv4];
 
+            lengthAux += 6;
+
             s = vertices[v1-1];
             pointsArray.push(vec4(s[0], s[1], s[2], 1)); 
             normalsArray.push(vec4(n1[0], n1[1], n1[2], 0)); 
@@ -186,6 +191,7 @@ function loadObjFile(data) {
           //face com 3 vertices
           else
           {
+            lengthAux+=3;
             s = vertices[v1-1];
             pointsArray.push(vec4(s[0], s[1], s[2], 1.0)); 
             normalsArray.push(vec4(n1[0], n1[1], n1[2], 0.0));
@@ -216,6 +222,8 @@ function loadObjFile(data) {
       }
       fPosition = lPosition+1;
   }
+  lengthObjects.push(lengthAux);
+  alert(lengthAux);
   // FAZENDO um backup do normalArray
   for(var k = 0; smooth1 == 1 && k<normalsArray.length; k++)
   {
@@ -223,8 +231,9 @@ function loadObjFile(data) {
     normalsArrayCopy.push(vec4(v[0], v[1], v[2], v[3]));
   }
 
-  meio = [(minX + maxX)/2.0, (minY + maxY)/2.0, (minZ + maxZ)/2.0];
-  diam = Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ));
+  meio = [(minX + maxX)/2.0, (minY + maxY)/2.0, (minZ + maxZ)/2.0];  
+  diam.push(Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)));
+
 }
 
 function readFace(position, data, vn)

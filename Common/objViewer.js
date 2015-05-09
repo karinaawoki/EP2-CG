@@ -10,12 +10,19 @@ var pointsArray  = [];
 var normalsArray = [];
 
 //VARIAVEIS ADICIONADAS!
+var diam = [];
+var lengthObjects = [];
 var meio = [];
-var diam = Math.sqrt(3);
 var normalsArrayCopy  = [];
 var normalsByVertices = []; // blaa[vertice] = [[face, normal], [face, normal]]
 var faces   = [];           // blaa[face] = [vert, vert, vert]
 var normals = [];
+
+
+//evento do  mouse
+var pointerPos = vec2(0.0,0.0);
+var desl = [0, 0];
+
 
 
 var vertices = [
@@ -134,7 +141,7 @@ window.onload = function init() {
     gl.useProgram( program );
     
     // draw simple cube for starters
-    colorCube();
+    //AQUI colorCube();
     // create vertex and normal buffers
     createBuffers();
 
@@ -156,6 +163,10 @@ window.onload = function init() {
     document.getElementById("ButtonF").onclick = function(){flat();};
     document.getElementById("ButtonSA").onclick = function(){smooth1();};
     document.getElementById("ButtonSC").onclick = function(){smooth();};
+
+    
+    object.onmousedown = function(event){pointerPos = [event.clientX, event.clientY];};
+    object.onmouseup   = function(event){desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];alert("MATT não pula linha");};
 
     document.getElementById('files').onchange = function (evt) {
         var obj;
@@ -204,21 +215,30 @@ var render = function() {
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[yAxis], [0, 1, 0] ));
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[zAxis], [0, 0, 1] ));
 
-    modelViewMatrix = mult(modelViewMatrix,scale(vec3(2/diam,2/diam,2/diam)));
-    modelViewMatrix = mult(modelViewMatrix,translate(vec3  (-meio[0],-meio[1],-meio[2])  ));
 
+    //modelViewMatrix = mult(modelViewMatrix,translate(vec3  (-meio[0],-meio[1],-meio[2])  ));
+
+    
 
     projectionMatrix = ortho(xleft, xright, ybottom, ytop, znear, zfar);
 
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
-    gl.drawArrays( gl.TRIANGLES, 0, pointsArray.length );
+    var j = 0;
+    for(var i = 0; i<lengthObjects.length; i++)
+    {
+
+        gl.drawArrays( gl.TRIANGLES, j, lengthObjects[i] );
+        j+=lengthObjects[i];
+    }
+    //gl.drawArrays( gl.TRIANGLES, 0, pointsArray.length );
             
     requestAnimFrame(render);
 }
 
 function createBuffers(points, normals) {
+
     var nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
@@ -241,8 +261,19 @@ function createBuffers(points, normals) {
 function loadObject(data) {
     // TO DO: convert strings into array of vertex and normal vectors
 
-    var result = loadObjFile(data);
 
+    var result = loadObjFile(data);
+    var k = 0;
+    for(var i = 0; i<lengthObjects.length; i++)
+    {
+        for(var j = 0; j<lengthObjects[i]; j++)
+        {
+            console.log("antes   " + pointsArray[j+k]);
+            pointsArray[j+k] = multVectorMatrix(pointsArray[j+k],scale(vec3(2/diam[i],2/diam[i],2/diam[i])));
+            console.log("depois   " + pointsArray[j+k]);
+        }
+        k+=lengthObjects[i];
+    }
     // TO DO: apply transformation to the object so that he is centered at the origin
 }
 
@@ -334,4 +365,28 @@ function calculaNormaisSmooth()
             normalsByVertices[faces[i][j]].push([i, vec4 (n[0], n[1], n[2], n[3]) ]);   
         }
     }
+}
+
+
+
+
+
+
+
+
+
+function multVectorMatrix(v, m)
+{
+    var vec = [];
+    var sum ;
+    for(var i = 0; i<m.length; i++)
+    {
+        sum = 0;
+        for(var j = 0; j<v.length; j++)
+        {
+            sum += v[j]*m[i][j];
+        }
+        vec.push(sum);
+    }
+    return vec;
 }
