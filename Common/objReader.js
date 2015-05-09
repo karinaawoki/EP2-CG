@@ -13,7 +13,7 @@ function loadObjFile(data,objects) {
   faces = [];
   vertices = [];
   normals  = [];
-  objobjPoints  = []; 
+  objPoints  = []; 
   objNormals = [];
   objNormalsCopy = [];
 
@@ -235,9 +235,9 @@ function loadObjFile(data,objects) {
   diam.push(Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)));
 
   var obj = {
-    var pointsArray = objPoints;
-    var normalsArray = objNormals;
-  }
+    pointsArray: objPoints,
+    normalsArray: objNormals
+  };
 
   objects.push(obj);
 

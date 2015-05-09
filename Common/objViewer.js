@@ -6,14 +6,15 @@ var gl;
 
 var numVertices  = 36;
 
-var pointsArray  = [];
-var normalsArray = [];
+//var pointsArray  = [];
+//var normalsArray = [];
 
 //VARIAVEIS ADICIONADAS!
+var objects = [];
 var diam = [];
 var lengthObjects = [];
 var meio = [];
-var normalsArrayCopy  = [];
+//var normalsArrayCopy  = [];
 var normalsByVertices = []; // blaa[vertice] = [[face, normal], [face, normal]]
 var faces   = [];           // blaa[face] = [vert, vert, vert]
 var normals = [];
@@ -143,7 +144,7 @@ window.onload = function init() {
     // draw simple cube for starters
     //AQUI colorCube();
     // create vertex and normal buffers
-    createBuffers();
+    //createBuffers();
 
     thetaLoc = gl.getUniformLocation(program, "theta"); 
 
@@ -201,30 +202,28 @@ window.onload = function init() {
         reader.onload = function() {
              loadObject(this.result);
              
-
-             createBuffers();
-             render();
+             for(var i = 0; i < objects.length; i++){
+                 createBuffers(objects[i]);
+                 alert("oe");
+                 render(objects[i]);
+                 alert("xau");
+             }
         }
         reader.readAsText(file)
     };
 
-    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"),
-       flatten(ambientProduct));
-    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"),
-       flatten(diffuseProduct) );
-    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), 
-       flatten(specularProduct) );	
-    gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), 
-       flatten(lightPosition) );
-       
-    gl.uniform1f(gl.getUniformLocation(program, 
-       "shininess"),materialShininess);
+    gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
+    gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
+    gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct) );	
+    gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(lightPosition) );
+    gl.uniform1f(gl.getUniformLocation(program, "shininess"),materialShininess);
     
-    render();
+    for(var i = 0; i < objects.length; i++){ 
+        render(objects[i]);
+    }
 }
 
-var render = function() {
-            
+function render(obj) {
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
             
     if (flag) theta[axis] += 2.0;
@@ -239,33 +238,22 @@ var render = function() {
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[yAxis], [0, 1, 0] ));
     modelViewMatrix = mult(modelViewMatrix, rotate(theta[zAxis], [0, 0, 1] ));
 
-
-    //modelViewMatrix = mult(modelViewMatrix,translate(vec3  (-meio[0],-meio[1],-meio[2])  ));
-
-    
-
     projectionMatrix = ortho(xleft, xright, ybottom, ytop, znear, zfar);
 
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
-    var j = 0;
-    for(var i = 0; i<lengthObjects.length; i++)
-    {
-
-        gl.drawArrays( gl.TRIANGLES, j, lengthObjects[i] );
-        j+=lengthObjects[i];
-    }
-    //gl.drawArrays( gl.TRIANGLES, 0, pointsArray.length );
-            
+    
+    gl.drawArrays( gl.TRIANGLES, 0, (obj.pointsArray).length );
+                
     requestAnimFrame(render);
 }
 
-function createBuffers(points, normals) {
+function createBuffers(obj) {
 
     var nBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(normalsArray), gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.normalsArray), gl.STATIC_DRAW );
 
     var vNormal = gl.getAttribLocation( program, "vNormal" );
     gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
@@ -273,7 +261,7 @@ function createBuffers(points, normals) {
 
     var vBuffer = gl.createBuffer();
     gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
-    gl.bufferData( gl.ARRAY_BUFFER, flatten(pointsArray), gl.STATIC_DRAW );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(obj.pointsArray), gl.STATIC_DRAW );
     
     var vPosition = gl.getAttribLocation(program, "vPosition");
     gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
@@ -286,8 +274,9 @@ function loadObject(data) {
     // TO DO: convert strings into array of vertex and normal vectors
 
 
-    var result = loadObjFile(data);
+    var result = loadObjFile(data,objects);
     var k = 0;
+    /*
     for(var i = 0; i<lengthObjects.length; i++)
     {
         for(var j = 0; j<lengthObjects[i]; j++)
@@ -298,6 +287,8 @@ function loadObject(data) {
         }
         k+=lengthObjects[i];
     }
+    */
+
     // TO DO: apply transformation to the object so that he is centered at the origin
 }
 
