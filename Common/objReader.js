@@ -7,7 +7,7 @@ function loadObjFile(data,objects) {
   var maxX, minX, maxY, minY, maxZ, minZ;
   var smooth1 = 0;
   var lengthAux = 0;
-  meio = [];
+  var meio = [];
 
   //We have to clean the vectors to delete the cube informations
   faces = [];
@@ -223,7 +223,7 @@ function loadObjFile(data,objects) {
       fPosition = lPosition+1;
   }
   lengthObjects.push(lengthAux);
-  alert(lengthAux);
+
   // FAZENDO um backup do normalArray
   for(var k = 0; smooth1 == 1 && k<objNormals.length; k++)
   {
@@ -236,7 +236,8 @@ function loadObjFile(data,objects) {
 
   var obj = {
     pointsArray: objPoints,
-    normalsArray: objNormals
+    normalsArray: objNormals,
+    center: meio
   };
 
   objects.push(obj);

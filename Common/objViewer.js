@@ -10,7 +10,6 @@ var numVertices  = 36;
 //var normalsArray = [];
 
 var numObject = 0;
-var translacao = 0;
 var transformacao = "n";
 // n = nada
 // t = transl
@@ -207,6 +206,16 @@ window.onload = function init() {
                     escala(direcao, tamanho);
                 }
             }
+            else if(transformacao == "t")
+            {
+                var desloc = deslocamento[1]/220.0;
+                translacao(direcao, desloc);
+            }
+            else if(transformacao == "r")
+            {
+                var angulo = deslocamento[1]/70.0;
+                rotacao(direcao, angulo);
+            }
         }
           
     };
@@ -222,13 +231,10 @@ window.onload = function init() {
         }
         else
         {
-            var deslocamento = [];
-            deslocamento = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
             switch (event.which) {
                 case 1:
-
                     direcao = "n";
-                    transformacao = "n";
+                    
                     //alert('Left Mouse button pressed.');
                     break;
                 case 3:
@@ -244,14 +250,14 @@ window.onload = function init() {
     window.addEventListener('keydown', function(event) {
       switch (event.keyCode) {
         case 46: // DEl
-            if(numObject>0)
+            if(numObject>=0)
             {
                 remove();
             }
         break;
 
         case 88: // X
-            if (transformacao == "n" && numObject>0)
+            if (transformacao == "n" && numObject>=0)
             {
                 remove();
             }
@@ -286,7 +292,6 @@ window.onload = function init() {
             {
                 transformacao = "t";
             }
-          alert("t");
         break;
 
         case 82: // R
@@ -294,7 +299,6 @@ window.onload = function init() {
             {
                 transformacao = "r";
             }
-            alert("r");
         break;
 
         case 83: // S
@@ -336,6 +340,7 @@ function seleciona()
 {
     numObject = (numObject + 1)%objects.length;
     alert(numObject);
+    transformacao = "n";
 }
 
 function remove()
@@ -343,9 +348,67 @@ function remove()
     objects.splice(numObject, 1);
 }
 
+function rotacao(eixo, aumento)
+{
+    if (eixo == "x")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            var Mrot = [[1.0, 0.0, 0.0, 0.0], 
+                    [0.0, Math.cos(aumento), Math.sin(aumento), 0.0], 
+                    [0.0, -1*Math.sin(aumento), Math.cos(aumento), 0.0], 
+                    [0.0, 0.0, 0.0, 1.0]];
+            rotacaoMaisTRanslacao(Mrot, i);
+        }
+    }
+    else if (eixo == "y")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            var Mrot = [[Math.cos(aumento), 0.0, -1*Math.sin(aumento), 0.0], 
+                    [0.0, 1.0, 0.0, 0.0], 
+                    [Math.sin(aumento), 0.0, Math.cos(aumento), 0.0], 
+                    [0.0, 0.0, 0.0, 1.0]];
+            rotacaoMaisTRanslacao(Mrot, i);
+        }
+    }
+    else if(eixo == "z")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            var Mrot = [[Math.cos(aumento), Math.sin(aumento), 0.0, 0.0], 
+                    [-1.0*Math.sin(aumento), Math.cos(aumento), 0.0, 0.0], 
+                    [0.0, 0.0, 1.0, 0.0], 
+                    [0.0, 0.0, 0.0, 1.0]];
+            rotacaoMaisTRanslacao(Mrot, i);
+        }
+    }  
+}
+
+
 function translacao(eixo, aumento)
 {
-
+ if (eixo == "x")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][0] = backupObj[i][0]+aumento;
+        }
+    }
+    else if (eixo == "y")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][1] = backupObj[i][1]+aumento;
+        }
+    }
+    else if(eixo == "z")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][2] = backupObj[i][2]+aumento;
+        }
+    }   
 }
 
 function escala(eixo, aumento)
@@ -384,10 +447,6 @@ function render(obj) {
                cradius * Math.cos(ctheta));
 
     modelViewMatrix = lookAt(eye, at, up);
-              
-    modelViewMatrix = mult(modelViewMatrix, rotate(theta[xAxis], [1, 0, 0] ));
-    modelViewMatrix = mult(modelViewMatrix, rotate(theta[yAxis], [0, 1, 0] ));
-    modelViewMatrix = mult(modelViewMatrix, rotate(theta[zAxis], [0, 0, 1] ));
 
     projectionMatrix = ortho(xleft, xright, ybottom, ytop, znear, zfar);
 
@@ -437,7 +496,8 @@ function loadObject(data) {
         for(var j = 0; j<lengthObjects[i]; j++)
         {
             console.log("antes   " + pointsArray[j+k]);
-            pointsArray[j+k] = multVectorMatrix(pointsArray[j+k],scale(vec3(2/diam[i],2/diam[i],2/diam[i])));
+            pointsArray[j+k] = multVectorMatrix(pointsArray[j+k],scale(
+            vec3(2/diam[i],2/diam[i],2/diam[i])));
             console.log("depois   " + pointsArray[j+k]);
         }
         k+=lengthObjects[i];
@@ -453,31 +513,29 @@ function loadObject(data) {
 
 // FUNÇÕES ADICIONADAS!
 
-function calculaNormaisSmooth()
+
+
+
+
+
+function rotacaoMaisTRanslacao(Mrot ,ponto)
 {
-    for(var i = 0; i<vertices.length; i++)
-    {
-        normalsByVertices[i] = [];
-    }
-        normalsArray = [];
-    var t1, t2, n;
-    for(var i = 0; i<faces.length; i++)
-    {
-        t1 = subtract(vertices[faces[i][0]], vertices[faces[i][1]]);
-        t2 = subtract(vertices[faces[i][0]], vertices[faces[i][2]]);
-        n = vec4(cross(t1, t2), 0);
-        for(var j = 0; j<faces[i].length; j++)
-        {
-            normalsByVertices[faces[i][j]].push([i, vec4 (n[0], n[1], n[2], n[3]) ]);   
-        }
-    }
+    backupObj[ponto][0] -= objects[numObject].center[0];
+    backupObj[ponto][1] -= objects[numObject].center[1];
+    backupObj[ponto][2] -= objects[numObject].center[2];
+
+    //alert("centro" + objects[numObject].center);
+
+    objects[numObject].pointsArray[ponto] = multVectorMatrix(backupObj[ponto], Mrot);
+    
+    backupObj[ponto][0] += objects[numObject].center[0];
+    backupObj[ponto][1] += objects[numObject].center[1];
+    backupObj[ponto][2] += objects[numObject].center[2];
+
+    objects[numObject].pointsArray[ponto][0] += objects[numObject].center[0];
+    objects[numObject].pointsArray[ponto][1] += objects[numObject].center[1];
+    objects[numObject].pointsArray[ponto][2] += objects[numObject].center[2];
 }
-
-
-
-
-
-
 
 
 
