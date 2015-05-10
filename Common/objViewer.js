@@ -464,6 +464,9 @@ function render(obj) {
         if(selected != i){
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
+
+            createBuffersLines(objects[i]);
+            gl.drawArrays (gl.LINES, 0, 5);
         }else{
             materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
             materialSpecular  = vec4( 1.0, 0.1, 0.0, 1.0 );
@@ -486,6 +489,25 @@ function render(obj) {
     }
 
     requestAnimFrame(render);
+}
+
+function createBuffersLines(obj) {
+    var aux = [[vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
+               [vec4(obj.center[0] + 2*obj.diametro, obj.center[1], obj.center[2], 1.0)],
+               
+               [vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
+               [vec4(obj.center[0], obj.center[1] + 2*obj.diametro, obj.center[2], 1.0)],
+               
+               [vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
+               [vec4(obj.center[0], obj.center[1], obj.center[2] + 2*obj.diametro, 1.0)]];
+
+    var nBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer );
+    gl.bufferData( gl.ARRAY_BUFFER, flatten(aux), gl.STATIC_DRAW );
+
+    //var vNormal = gl.getAttribLocation( program, "vNormal" );
+    //gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
+    //gl.enableVertexAttribArray( vNormal );
 }
 
 function createBuffers(obj) {
