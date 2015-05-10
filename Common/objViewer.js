@@ -201,9 +201,11 @@ window.onload = function init() {
 
             if(transformacao=="s")
             {
-                var tamanho = deslocamento[1]/25.0;
-                if(tamanho<0){tamanho = -1*tamanho;}
-                escala(direcao, tamanho);
+                var tamanho = 1 - deslocamento[1]/220.0;
+                if(tamanho > 0)
+                {
+                    escala(direcao, tamanho);
+                }
             }
         }
           
@@ -339,6 +341,11 @@ function seleciona()
 function remove()
 {
     objects.splice(numObject, 1);
+}
+
+function translacao(eixo, aumento)
+{
+
 }
 
 function escala(eixo, aumento)
