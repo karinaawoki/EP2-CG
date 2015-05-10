@@ -28,6 +28,7 @@ var objects = [];
 var diam = [];
 var lengthObjects = [];
 var meio = [];
+var selected = -1;
 //var normalsArrayCopy  = [];
 var normalsByVertices = []; // blaa[vertice] = [[face, normal], [face, normal]]
 var faces   = [];           // blaa[face] = [vert, vert, vert]
@@ -339,8 +340,10 @@ window.onload = function init() {
 function seleciona()
 {
     numObject = (numObject + 1)%objects.length;
+    selected = numObject;
     alert(numObject);
     transformacao = "n";
+
 }
 
 function remove()
@@ -454,8 +457,27 @@ function render(obj) {
     gl.uniformMatrix4fv(projectionMatrixLoc, false, flatten(projectionMatrix));
 
     for(var i = 0; i < objects.length; i++){
-        createBuffers(objects[i]);
-        gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
+        if(selected != i){
+            createBuffers(objects[i]);
+            gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
+        }else{
+            materialDiffuse   = vec4( 0.0, 0.8, 1.0, 1.0 );
+            materialSpecular  = vec4( 0.0, 0.8, 1.0, 1.0 );
+            diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            specularProduct = mult(lightSpecular, materialSpecular);
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct) );
+
+            createBuffers(objects[i]);
+            gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
+
+            materialDiffuse   = vec4( 1.0, 0.8, 0.0, 1.0 );
+            materialSpecular  = vec4( 1.0, 0.8, 0.0, 1.0 );
+            diffuseProduct = mult(lightDiffuse, materialDiffuse);
+            specularProduct = mult(lightSpecular, materialSpecular);
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct) );
+        }
                 
     }
 
