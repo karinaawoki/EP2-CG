@@ -11,6 +11,18 @@ var numVertices  = 36;
 
 var numObject = 0;
 var translacao = 0;
+var transformacao = "n";
+// n = nada
+// t = transl
+// r = rot
+// s = escala
+
+var direcao = "n";
+// n = nada
+// x 
+// y 
+// z 
+var backupObj = [];
 
 //VARIAVEIS ADICIONADAS!
 var objects = [];
@@ -25,7 +37,7 @@ var normals = [];
 
 //evento do  mouse
 var pointerPos = vec2(0.0,0.0);
-var desl = [0, 0];
+var mouseClicado = 0;
 
 
 
@@ -170,8 +182,33 @@ window.onload = function init() {
     
     canvas.onmousedown = function(event){
         pointerPos = [event.clientX, event.clientY];
-        
+        mouseClicado = 1;
+        if(direcao!="n" && transformacao != "n")
+        {
+            for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+            {
+                var aux = objects[numObject].pointsArray[i];
+                backupObj.push([aux[0], aux[1], aux[2], aux[3]]);
+            }
+        }
     };
+
+    canvas.onmousemove = function(event){
+        if(mouseClicado == 1 && direcao!="n")
+        {
+            var deslocamento = [];
+            deslocamento = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
+
+            if(transformacao=="s")
+            {
+                var tamanho = deslocamento[1]/25.0;
+                if(tamanho<0){tamanho = -1*tamanho;}
+                escala(direcao, tamanho);
+            }
+        }
+          
+    };
+
 
     canvas.onmouseup   = function(event){
         var shiftPressed=0;
@@ -181,58 +218,88 @@ window.onload = function init() {
         {
             alert("SHIFT PRINTADO");
         }
-        else if(aPressed)
-        {
-            alert("a");
-        }
         else
         {
+            var deslocamento = [];
+            deslocamento = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
             switch (event.which) {
                 case 1:
+
+                    direcao = "n";
+                    transformacao = "n";
                     //alert('Left Mouse button pressed.');
                     break;
                 case 3:
-                    alert('Right Mouse button pressed.');
+                    //alert('Right Mouse button pressed.');
                     break;
                 }
-            desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
-            alert("MATT não pula linha");
         }
+        mouseClicado = 0;
+        backupObj = [];
     };
 
 
     window.addEventListener('keydown', function(event) {
       switch (event.keyCode) {
-        case 88: // Left
-          alert("x");
-          if (translacao == 0)
-          {
-            remove();
-          }
+        case 46: // DEl
+            if(numObject>0)
+            {
+                remove();
+            }
         break;
 
-        case 46: // Up
-          alert("del");
+        case 88: // X
+            if (transformacao == "n" && numObject>0)
+            {
+                remove();
+            }
+            else if (transformacao!="n")
+            {
+                direcao = "x";
+            }
         break;
 
-        case 27: // Right
+        case 89: // Y
+            if(transformacao!="n")
+            {
+                direcao = "y";
+            }
+        break;
+
+        case 90: // Z
+            if(transformacao!="n")
+            {
+                direcao = "z";
+            }
+        break;
+
+        case 27: // ESC
           alert("esc");
         break;
 
-        case 89: // Down
-          alert("y");
-        break;
-        case 90: // Down
-          alert("z");
-        break;
-        case 84: // Down
+        
+        
+        case 84: // T
+            if(numObject>=0)
+            {
+                transformacao = "t";
+            }
           alert("t");
         break;
-        case 82: // Down
-          alert("r");
+
+        case 82: // R
+            if(numObject>=0)
+            {
+                transformacao = "r";
+            }
+            alert("r");
         break;
-        case 83: // Down
-          alert("s");
+
+        case 83: // S
+            if(numObject>=0)
+            {
+                transformacao = "s";
+            }
         break;
       }
     }, false);
@@ -272,6 +339,31 @@ function seleciona()
 function remove()
 {
     objects.splice(numObject, 1);
+}
+
+function escala(eixo, aumento)
+{
+    if (eixo == "x")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][0] = backupObj[i][0]*aumento;
+        }
+    }
+    else if (eixo == "y")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][1] = backupObj[i][1]*aumento;
+        }
+    }
+    else if(eixo == "z")
+    {
+        for(var i = 0; i<objects[numObject].pointsArray.length; i++)
+        {
+            objects[numObject].pointsArray[i][2] = backupObj[i][2]*aumento;
+        }
+    }
 }
 
 function render(obj) {
