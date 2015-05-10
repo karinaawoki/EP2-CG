@@ -341,7 +341,6 @@ function seleciona()
 {
     numObject = (numObject + 1)%objects.length;
     selected = numObject;
-    alert(numObject);
     transformacao = "n";
 
 }
