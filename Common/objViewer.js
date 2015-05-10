@@ -441,6 +441,10 @@ function escala(eixo, aumento)
 function render(obj) {
 
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    var wrapper = document.getElementById("gl-wrapper"); 
+    var ratio = wrapper.clientHeight/wrapper.clientWidth; 
+
             
     if (flag) theta[axis] += 2.0;
             
@@ -449,6 +453,7 @@ function render(obj) {
                cradius * Math.cos(ctheta));
 
     modelViewMatrix = lookAt(eye, at, up);
+    modelViewMatrix = mult(modelViewMatrix,scale(vec3(ratio,1,1)));
 
     projectionMatrix = ortho(xleft, xright, ybottom, ytop, znear, zfar);
 

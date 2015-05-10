@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Simple OBJ Viewer</title>
-    </head>
+<head>
+    <meta charset="utf-8" />
+    <title>Simple OBJ Viewer</title>
+    <link rel="stylesheet" type="text/css" href="objViewer.css">
+</head>
 
     <script id="vertex-shader" type="x-shader/x-vertex">
         attribute  vec4 vPosition;
@@ -68,44 +69,29 @@
     </script>
 
 
-    <script type="text/javascript">
-        function resize_canvas(){
-            canvas = document.getElementById("gl-canvas");
-            if (canvas.width  < window.innerWidth)
-            {
-                canvas.width  = window.innerWidth;
-            }
-
-            if (canvas.height < window.innerHeight)
-            {
-                canvas.height = window.innerHeight;
-            }
-        }
-    </script>
+    
 
     <script type="text/javascript" src="../Common/webgl-utils.js"></script>
     <script type="text/javascript" src="../Common/initShaders.js"></script>
     <script type="text/javascript" src="../Common/MV.js"></script>
 
     <script type="text/javascript" src="objViewer.js"></script>
-    <script type="text/javascript" src="objReader.js">
+    <script type="text/javascript" src="objReader.js"></script>
+
+
+    <body>
+        <div id="gl-wrapper">
+            <input type="file" id="files" name="files[]" accept=".obj,"></input>
         
-    </script>
+            <canvas id="gl-canvas" width="512" height="512"> Oops ... your browser doesn't support the HTML5 canvas element </canvas>
+        
+            <button id = "ButtonX">X</button>
+            <button id = "ButtonY">Y</button>
+            <button id = "ButtonZ">Z</button>
+            <button id = "ButtonT">para</button>
 
-    <input type="file" id="files" name="files[]" accept=".obj,"></input>
-
-    <body onresize="resize_canvas()">
-        <p>
-            <canvas id="gl-canvas" width="512" height="512">
-                Oops ... your browser doesn't support the HTML5 canvas element
-            </canvas>
-        </p>
-        <button id = "ButtonX">X</button>
-        <button id = "ButtonY">Y</button>
-        <button id = "ButtonZ">Z</button>
-        <button id = "ButtonT">para</button>
-
-        <button id = "ButtonS">Seleciona Objs</button>
+            <button id = "ButtonS">Seleciona Objs</button>
+        </div>
 
     </body>
 </html>
