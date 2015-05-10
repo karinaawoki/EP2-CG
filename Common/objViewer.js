@@ -9,6 +9,9 @@ var numVertices  = 36;
 //var pointsArray  = [];
 //var normalsArray = [];
 
+var numObject = 0;
+var translacao = 0;
+
 //VARIAVEIS ADICIONADAS!
 var objects = [];
 var diam = [];
@@ -161,9 +164,8 @@ window.onload = function init() {
     document.getElementById("ButtonY").onclick = function(){axis = yAxis;};
     document.getElementById("ButtonZ").onclick = function(){axis = zAxis;};
     document.getElementById("ButtonT").onclick = function(){flag = !flag;};
-    document.getElementById("ButtonF").onclick = function(){flat();};
-    document.getElementById("ButtonSA").onclick = function(){smooth1();};
-    document.getElementById("ButtonSC").onclick = function(){smooth();};
+    
+    document.getElementById("ButtonS").onclick = function(){seleciona();};
 
     
     canvas.onmousedown = function(event){
@@ -174,9 +176,14 @@ window.onload = function init() {
     canvas.onmouseup   = function(event){
         var shiftPressed=0;
         shiftPressed = event.shiftKey;
+        aPressed = event.aKey;
         if(shiftPressed)
         {
             alert("SHIFT PRINTADO");
+        }
+        else if(aPressed)
+        {
+            alert("a");
         }
         else
         {
@@ -192,6 +199,43 @@ window.onload = function init() {
             alert("MATT não pula linha");
         }
     };
+
+
+    window.addEventListener('keydown', function(event) {
+      switch (event.keyCode) {
+        case 88: // Left
+          alert("x");
+          if (translacao == 0)
+          {
+            remove();
+          }
+        break;
+
+        case 46: // Up
+          alert("del");
+        break;
+
+        case 27: // Right
+          alert("esc");
+        break;
+
+        case 89: // Down
+          alert("y");
+        break;
+        case 90: // Down
+          alert("z");
+        break;
+        case 84: // Down
+          alert("t");
+        break;
+        case 82: // Down
+          alert("r");
+        break;
+        case 83: // Down
+          alert("s");
+        break;
+      }
+    }, false);
 
     document.getElementById('files').onchange = function (evt) {
         var obj;
@@ -215,6 +259,19 @@ window.onload = function init() {
     gl.uniform4fv(gl.getUniformLocation(program, "lightPosition"), flatten(lightPosition) );
     gl.uniform1f(gl.getUniformLocation(program, "shininess"),materialShininess);
 
+}
+
+
+
+function seleciona()
+{
+    numObject = (numObject + 1)%objects.length;
+    alert(numObject);
+}
+
+function remove()
+{
+    objects.splice(numObject, 1);
 }
 
 function render(obj) {
@@ -296,70 +353,6 @@ function loadObject(data) {
 
 
 // FUNÇÕES ADICIONADAS!
-
-function flat()
-{
-    normalsArray = [];
-    var i, j;
-    var t1, t2, normal1;
-    for(i = 0; i<faces.length; i++)
-    {
-        t1 = subtract(vertices[faces[i][0]], vertices[faces[i][1]]);
-        t2 = subtract(vertices[faces[i][0]], vertices[faces[i][2]]);
-        normal1 = vec4(cross(t1, t2), 0);
-        for(j = 0; j<faces[i].length; j++)
-        {
-            normalsArray.push(vec4(normal1[0], normal1[1], normal1[2], 0));
-        }
-    }
-    createBuffers();
-    render();
-}
-
-
-function smooth()
-{
-    normalsArray = [];
-    calculaNormaisSmooth();
-    for(var i = 0; i<faces.length; i++) //i é a face
-    {
-        for (var j = 0; j<faces[i].length; j++) //j é vertice da face
-        { 
-            var x = 0, y = 0, z = 0, num;
-            for(var k = 0; k<normalsByVertices[faces[i][j]].length; k++)
-            {
-                x = x + normalsByVertices[faces[i][j]][k][1][0];
-                y = y + normalsByVertices[faces[i][j]][k][1][1];
-                z = z + normalsByVertices[faces[i][j]][k][1][2];
-            }
-            num  = normalsByVertices[j].length;
-            x = x/num;
-            y = y/num;
-            z = z/num;
-            normalsArray.push(vec4(x, y, z, 0));
-        }
-    }
-    createBuffers();
-    render();
-}
-
-function smooth1()
-{
-    if(normalsArrayCopy.length == 0)
-    {
-        alert("As normais não foram especificadas no arquivo!");
-    }
-    else{
-        normalsArray = [];
-        for(var i=0; i<normalsArrayCopy.length; i++)
-        {
-            var v = normalsArrayCopy[i];
-            normalsArray.push(vec4(v[0], v[1], v[2], v[3]));
-        }
-        createBuffers();
-        render();
-    }
-}
 
 function calculaNormaisSmooth()
 {
