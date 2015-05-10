@@ -460,8 +460,8 @@ function render(obj) {
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
         }else{
-            materialDiffuse   = vec4( 0.0, 0.8, 1.0, 1.0 );
-            materialSpecular  = vec4( 0.0, 0.8, 1.0, 1.0 );
+            materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
+            materialSpecular  = vec4( 1.0, 0.1, 0.0, 1.0 );
             diffuseProduct = mult(lightDiffuse, materialDiffuse);
             specularProduct = mult(lightSpecular, materialSpecular);
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
