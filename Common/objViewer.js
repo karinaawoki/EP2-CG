@@ -444,6 +444,9 @@ function escala(eixo, aumento)
         }
 
         objects[numObject].delta[0] = backupDelta[0] * aumento;
+        objects[numObject].diametro = Math.sqrt(objects[numObject].delta[0]*objects[numObject].delta[0]
+                                              + objects[numObject].delta[1]*objects[numObject].delta[1]
+                                              + objects[numObject].delta[2]*objects[numObject].delta[2]);
     }
     else if (eixo == "y")
     {
@@ -453,7 +456,10 @@ function escala(eixo, aumento)
             objects[numObject].pointsArray[i][1] = (backupObj[i][1]-aux)*aumento+aux;
             
         }
-        objects[numObject].delta[0] = backupDelta[1] * aumento;
+        objects[numObject].delta[1] = backupDelta[1] * aumento;
+        objects[numObject].diametro = Math.sqrt(objects[numObject].delta[0]*objects[numObject].delta[0]
+                                              + objects[numObject].delta[1]*objects[numObject].delta[1]
+                                              + objects[numObject].delta[2]*objects[numObject].delta[2]);
     }
     else if(eixo == "z")
     {
@@ -463,7 +469,10 @@ function escala(eixo, aumento)
             objects[numObject].pointsArray[i][2] = (backupObj[i][2]-aux)*aumento + aux;
             
         }
-        objects[numObject].delta[0] = backupDelta[2] * aumento;
+        objects[numObject].delta[2] = backupDelta[2] * aumento;
+        objects[numObject].diametro = Math.sqrt(objects[numObject].delta[0]*objects[numObject].delta[0]
+                                              + objects[numObject].delta[1]*objects[numObject].delta[1]
+                                              + objects[numObject].delta[2]*objects[numObject].delta[2]);
     }
 }
 
@@ -532,11 +541,11 @@ function render(obj) {
 function createBuffersLines(obj) {
    var aux = [
        vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
-       vec4(obj.center[0] + obj.diametro, obj.center[1], obj.center[2], 1.0),   
+       vec4(obj.center[0] + obj.diametro*0.6, obj.center[1], obj.center[2], 1.0),   
        vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
-       vec4(obj.center[0], obj.center[1] + obj.diametro, obj.center[2], 1.0),
+       vec4(obj.center[0], obj.center[1] + obj.diametro*0.6, obj.center[2], 1.0),
        vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
-       vec4(obj.center[0], obj.center[1], obj.center[2] + obj.diametro, 1.0)
+       vec4(obj.center[0], obj.center[1], obj.center[2] + obj.diametro*0.6, 1.0)
    ];
 
     var vBuffer = gl.createBuffer();
