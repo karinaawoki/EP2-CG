@@ -162,6 +162,13 @@ window.onload = function init() {
     //AQUI colorCube();
     // create vertex and normal buffers
     //createBuffers();
+    eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
+       cradius * Math.sin(ctheta) * Math.sin(cphi), 
+       cradius * Math.cos(ctheta));
+
+    var radius = 0;
+    if(znear - zfar > 0) radius = znear-zfar;
+    else radius = zfar - znear;
 
     thetaLoc = gl.getUniformLocation(program, "theta"); 
 
@@ -209,14 +216,19 @@ window.onload = function init() {
     };
 
     canvas.onmousemove = function(event){
+
+
+
+
         if(mouseClicado == 1 && direcao!="n")
         {
-            var deslocamento = [];
-            deslocamento = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
+            var desl = [];
+            desl = [event.clientX - pointerPos[0], event.clientY - pointerPos[1]];
+            
 
             if(transformacao=="s")
             {
-                var tamanho = 1 - deslocamento[1]/220.0;
+                var tamanho = 1 - desl[1]/220.0;
                 if(tamanho > 0)
                 {
                     escala(direcao, tamanho);
@@ -224,12 +236,12 @@ window.onload = function init() {
             }
             else if(transformacao == "t")
             {
-                var desloc = deslocamento[1]/220.0;
+                var desloc = desl[1]/220.0;
                 translacao(direcao, desloc);
             }
             else if(transformacao == "r")
             {
-                var angulo = deslocamento[1]/70.0;
+                var angulo = desl[1]/70.0;
                 rotacao(direcao, angulo);
             }
         }
@@ -241,6 +253,56 @@ window.onload = function init() {
         var shiftPressed=0;
         shiftPressed = event.shiftKey;
         aPressed = event.aKey;
+
+
+        ///ROTAÇÃO////
+
+
+        var X = event.clientX;
+        var Y = event.clientY;
+        
+        
+
+        var z1 = 0;
+        if(pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1] <= (radius*radius)/2) z1 = Math.sqrt(radius*radius - (pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1]));
+        else z1 = ((radius*radius/2))/Math.sqrt(pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1]);
+
+        var z2 = 0;
+        if(X*X + Y*Y <= (radius*radius)/2) z2 = Math.sqrt(radius*radius - (X*X + Y*Y));
+        else z2 = ((radius*radius/2))/Math.sqrt(X*X + Y*Y);
+
+        var v1 = normalize(vec3(pointerPos[0],pointerPos[1],z1));
+        console.log("v1 " + v1);
+        var v2 = normalize(vec3(X,Y,z2));
+        console.log("v2 " + v2);
+
+        var N = normalize(cross(v1,v2));
+        console.log("N " + N);
+
+        var theta = 500* Math.acos(dot(v1,v2));
+        console.log("theta " + theta);
+
+        var Q = new Quaternion(Math.cos(radians(theta/2)),scale2(Math.sin(radians(theta/2)),N));
+        console.log("Q "+Q.s + Q.v );
+
+        var eye2 = new Quaternion(0,eye);
+        var at2 = new Quaternion(0,at);
+        var up2 = new Quaternion(0,up);
+
+
+
+        eye2 = Q.mult(eye2.mult(Q.conjugate()));
+        at2 = Q.mult(at2.mult(Q.conjugate()));
+        up2 = Q.mult(up2.mult(Q.conjugate()));
+
+
+        //alert(eye);
+        eye = eye2.v;
+        //at = at2.v;
+        //up = up2.v;
+        //alert(eye);
+        /////////////
+
         if(shiftPressed)
         {
             alert("SHIFT PRINTADO");
@@ -486,9 +548,11 @@ function render(obj) {
             
     if (flag) theta[axis] += 2.0;
             
-    eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
+    /*eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
                cradius * Math.sin(ctheta) * Math.sin(cphi), 
-               cradius * Math.cos(ctheta));
+               cradius * Math.cos(ctheta));*/
+
+    console.log("EYE >>" + eye);
 
     modelViewMatrix = lookAt(eye, at, up);
     modelViewMatrix = mult(modelViewMatrix,scale(vec3(ratio,1,1)));
