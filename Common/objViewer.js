@@ -394,6 +394,10 @@ function translacao(eixo, aumento)
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
+            if (numObject!=selected)
+            {
+                alert("ERROOOO!!");
+            }
             objects[numObject].pointsArray[i][0] = backupObj[i][0]+aumento;
         }
     }
@@ -465,15 +469,15 @@ function render(obj) {
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
 
-            createBuffersLines(objects[i]);
-            gl.lineWidth(2);
-            var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
-            var specularProductLine = mult(lightDiffuse, materialSpecularLine);
-            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
-            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
-            gl.drawArrays( gl.LINE_STRIP, 0, 6);
+            //createBuffersLines(objects[i]);
+            //gl.lineWidth(2);
+            //var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            //var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            //var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
+            //var specularProductLine = mult(lightDiffuse, materialSpecularLine);
+            //gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
+            //gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
+            //gl.drawArrays( gl.LINE_STRIP, 0, 6);
             
         }else{
             materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
