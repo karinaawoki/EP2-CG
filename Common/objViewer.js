@@ -505,8 +505,8 @@ function render(obj) {
 
             
         }else{
-            materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
-            materialSpecular  = vec4( 1.0, 0.1, 0.0, 1.0 );
+            materialDiffuse   = vec4( 1.0, 0.4, 0.0, 1.0 );
+            materialSpecular  = vec4( 1.0, 0.4, 0.0, 1.0 );
             diffuseProduct = mult(lightDiffuse, materialDiffuse);
             specularProduct = mult(lightSpecular, materialSpecular);
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
@@ -515,23 +515,41 @@ function render(obj) {
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
 
+            ////////////Desenha Linhas //////////////
             createBuffersLines(objects[i]);
-            gl.lineWidth(2);
-            var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
-            var specularProductLine = mult(lightDiffuse, materialSpecularLine);
-            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
-            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
-            gl.drawArrays( gl.LINE_STRIP, 0, 6);
+            gl.lineWidth(3);
+            var lightAmbientLine = vec4( 1.0, 1.0, 1.0, 1.0 );
+            var materialAmbientLine   = vec4( 1.0, 0.0, 0.0, 1.0 );
+            var ambientProductLine = mult(lightAmbientLine, materialAmbientLine);
+            gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProductLine));
+            gl.drawArrays( gl.LINE_STRIP, 0, 2);
+
+            lightAmbientLine = vec4( 1.0, 1.0, 1.0, 1.0 );
+            materialAmbientLine   = vec4( 0.0, 1.0, 0.0, 1.0 );
+            ambientProductLine = mult(lightAmbientLine, materialAmbientLine);
+            gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProductLine));
+            gl.drawArrays( gl.LINE_STRIP, 2, 2);
+
+            lightAmbientLine = vec4( 1.0, 1.0, 1.0, 1.0 );
+            materialAmbientLine   = vec4( 0.0, 0.0, 1.0, 1.0 );
+            ambientProductLine = mult(lightAmbientLine, materialAmbientLine);
+            gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProductLine));
+            gl.drawArrays( gl.LINE_STRIP, 4, 2);
+            ////////////Desenha Linhas //////////////
             
 
+            lightAmbient  = vec4(  0.2,  0.2,  0.2, 1.0 );
+            materialAmbient   = vec4( 1.0, 0.0, 1.0, 1.0 );
+            ambientProduct = mult(lightAmbient, materialAmbient);
+            gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
+            
             materialDiffuse   = vec4( 1.0, 0.8, 0.0, 1.0 );
             materialSpecular  = vec4( 1.0, 0.8, 0.0, 1.0 );
             diffuseProduct = mult(lightDiffuse, materialDiffuse);
             specularProduct = mult(lightSpecular, materialSpecular);
             gl.uniform4fv(gl.getUniformLocation(program, "diffuseProduct"), flatten(diffuseProduct) );
             gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProduct) );
+            
         }
                 
     }
