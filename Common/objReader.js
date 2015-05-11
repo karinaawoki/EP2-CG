@@ -237,7 +237,11 @@ function loadObjFile(data,objects) {
   var obj = {
     pointsArray: objPoints,
     normalsArray: objNormals,
-    center: meio
+    center: meio,
+    diametro: Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)),
+    maxX: maxX,
+    maxY: maxY,
+    maxZ: maxZ
   };
 
   objects.push(obj);

@@ -439,7 +439,7 @@ function escala(eixo, aumento)
 }
 
 function render(obj) {
-
+    
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     var wrapper = document.getElementById("gl-wrapper"); 
@@ -466,7 +466,15 @@ function render(obj) {
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
 
             createBuffersLines(objects[i]);
-            gl.drawArrays (gl.LINES, 0, 5);
+            gl.lineWidth(2);
+            var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
+            var specularProductLine = mult(lightDiffuse, materialSpecularLine);
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
+            gl.drawArrays( gl.LINE_STRIP, 0, 6);
+            
         }else{
             materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
             materialSpecular  = vec4( 1.0, 0.1, 0.0, 1.0 );
@@ -477,6 +485,17 @@ function render(obj) {
 
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
+
+            createBuffersLines(objects[i]);
+            gl.lineWidth(2);
+            var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
+            var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
+            var specularProductLine = mult(lightDiffuse, materialSpecularLine);
+            gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
+            gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
+            gl.drawArrays( gl.LINE_STRIP, 0, 6);
+            
 
             materialDiffuse   = vec4( 1.0, 0.8, 0.0, 1.0 );
             materialSpecular  = vec4( 1.0, 0.8, 0.0, 1.0 );
@@ -492,23 +511,24 @@ function render(obj) {
 }
 
 function createBuffersLines(obj) {
-    var aux = [[vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
-               [vec4(obj.center[0] + 2*obj.diametro, obj.center[1], obj.center[2], 1.0)],
-               
-               [vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
-               [vec4(obj.center[0], obj.center[1] + 2*obj.diametro, obj.center[2], 1.0)],
-               
-               [vec4(obj.center[0], obj.center[1], obj.center[2], 1.0)], 
-               [vec4(obj.center[0], obj.center[1], obj.center[2] + 2*obj.diametro, 1.0)]];
+   var aux = [
+       vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
+       vec4(obj.center[0] + obj.diametro, obj.center[1], obj.center[2], 1.0),   
+       vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
+       vec4(obj.center[0], obj.center[1] + obj.diametro, obj.center[2], 1.0),
+       vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
+       vec4(obj.center[0], obj.center[1], obj.center[2] + obj.diametro, 1.0)
+   ];
 
-    var nBuffer = gl.createBuffer();
-    gl.bindBuffer( gl.ARRAY_BUFFER, nBuffer );
+    var vBuffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER, vBuffer );
     gl.bufferData( gl.ARRAY_BUFFER, flatten(aux), gl.STATIC_DRAW );
 
-    //var vNormal = gl.getAttribLocation( program, "vNormal" );
-    //gl.vertexAttribPointer( vNormal, 4, gl.FLOAT, false, 0, 0 );
-    //gl.enableVertexAttribArray( vNormal );
+    var vPosition = gl.getAttribLocation(program, "vPosition");
+    gl.vertexAttribPointer(vPosition, 4, gl.FLOAT, false, 0, 0);
+    gl.enableVertexAttribArray(vPosition);
 }
+
 
 function createBuffers(obj) {
     var aux = obj;
