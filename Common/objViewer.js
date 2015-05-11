@@ -22,6 +22,7 @@ var direcao = "n";
 // y 
 // z 
 var backupObj = [];
+var backupCenter = [];
 
 //VARIAVEIS ADICIONADAS!
 var objects = [];
@@ -190,6 +191,13 @@ window.onload = function init() {
                 var aux = objects[numObject].pointsArray[i];
                 backupObj.push([aux[0], aux[1], aux[2], aux[3]]);
             }
+
+            if(transformacao=="t" && direcao!="n")
+            {
+                backupCenter = [objects[numObject].center[0], 
+                                objects[numObject].center[1], 
+                                objects[numObject].center[2]];
+            }
         }
     };
 
@@ -245,6 +253,7 @@ window.onload = function init() {
         }
         mouseClicado = 0;
         backupObj = [];
+        backupCenter = [];
     };
 
 
@@ -322,7 +331,6 @@ window.onload = function init() {
             render();
             
         }
-
         reader.readAsText(file)
     };
 
@@ -342,7 +350,6 @@ function seleciona()
     numObject = (numObject + 1)%objects.length;
     selected = numObject;
     transformacao = "n";
-
 }
 
 function remove()
@@ -394,12 +401,11 @@ function translacao(eixo, aumento)
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
-            if (numObject!=selected)
-            {
-                alert("ERROOOO!!");
-            }
+            if (numObject!=selected){ alert("ERROOOO!!");  }
             objects[numObject].pointsArray[i][0] = backupObj[i][0]+aumento;
         }
+        objects[numObject].center[0] = backupCenter[0]+aumento;
+
     }
     else if (eixo == "y")
     {
@@ -407,6 +413,7 @@ function translacao(eixo, aumento)
         {
             objects[numObject].pointsArray[i][1] = backupObj[i][1]+aumento;
         }
+        objects[numObject].center[1] = backupCenter[1]+aumento;
     }
     else if(eixo == "z")
     {
@@ -414,6 +421,7 @@ function translacao(eixo, aumento)
         {
             objects[numObject].pointsArray[i][2] = backupObj[i][2]+aumento;
         }
+        objects[numObject].center[2] = backupCenter[2]+aumento;
     }   
 }
 
