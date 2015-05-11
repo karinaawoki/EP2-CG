@@ -23,6 +23,7 @@ var direcao = "n";
 // z 
 var backupObj = [];
 var backupCenter = [];
+var backupDelta = [];
 
 //VARIAVEIS ADICIONADAS!
 var objects = [];
@@ -198,6 +199,12 @@ window.onload = function init() {
                                 objects[numObject].center[1], 
                                 objects[numObject].center[2]];
             }
+            else if(transformacao == "s" && direcao!="n")
+            {
+                backupDelta = [objects[numObject].delta[0],
+                               objects[numObject].delta[1],
+                               objects[numObject].delta[2]];
+            }
         }
     };
 
@@ -253,6 +260,7 @@ window.onload = function init() {
         }
         mouseClicado = 0;
         backupObj = [];
+        backupDelta = [];
         backupCenter = [];
     };
 
@@ -431,22 +439,31 @@ function escala(eixo, aumento)
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
-            objects[numObject].pointsArray[i][0] = backupObj[i][0]*aumento;
+            var aux = objects[numObject].center[0];
+            objects[numObject].pointsArray[i][0] = (backupObj[i][0]-aux)*aumento+aux;
         }
+
+        objects[numObject].delta[0] = backupDelta[0] * aumento;
     }
     else if (eixo == "y")
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
-            objects[numObject].pointsArray[i][1] = backupObj[i][1]*aumento;
+            var aux = objects[numObject].center[1];
+            objects[numObject].pointsArray[i][1] = (backupObj[i][1]-aux)*aumento+aux;
+            
         }
+        objects[numObject].delta[0] = backupDelta[1] * aumento;
     }
     else if(eixo == "z")
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
-            objects[numObject].pointsArray[i][2] = backupObj[i][2]*aumento;
+            var aux = objects[numObject].center[2];
+            objects[numObject].pointsArray[i][2] = (backupObj[i][2]-aux)*aumento + aux;
+            
         }
+        objects[numObject].delta[0] = backupDelta[2] * aumento;
     }
 }
 
@@ -477,15 +494,6 @@ function render(obj) {
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
 
-            //createBuffersLines(objects[i]);
-            //gl.lineWidth(2);
-            //var materialDiffuseLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            //var materialSpecularLine = vec4( 0.0, 1.0, 0.0, 1.0 );
-            //var diffuseProductLine = mult(lightDiffuse, materialDiffuseLine);
-            //var specularProductLine = mult(lightDiffuse, materialSpecularLine);
-            //gl.uniform4fv(gl.getUniformLocation(program, "diffuseProductLine"), flatten(diffuseProductLine) );
-            //gl.uniform4fv(gl.getUniformLocation(program, "specularProduct"), flatten(specularProductLine) );
-            //gl.drawArrays( gl.LINE_STRIP, 0, 6);
             
         }else{
             materialDiffuse   = vec4( 1.0, 0.1, 0.0, 1.0 );
@@ -518,7 +526,6 @@ function render(obj) {
         }
                 
     }
-
     requestAnimFrame(render);
 }
 

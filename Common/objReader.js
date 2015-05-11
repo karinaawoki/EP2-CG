@@ -238,14 +238,19 @@ function loadObjFile(data,objects) {
     pointsArray: objPoints,
     normalsArray: objNormals,
     center: meio,
-    diametro: Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)),
-    maxX: maxX,
-    maxY: maxY,
-    maxZ: maxZ
+    diametro: Math.sqrt((maxX - minX)*(maxX - minX) 
+                      + (maxY - minY)*(maxY - minY) 
+                      + (maxZ - minZ)*(maxZ - minZ)),
+    delta: [maxX-minX, maxY-minY, maxZ-minZ]
   };
 
   objects.push(obj);
 
+}
+
+function calculaDiametro(obj)
+{
+  obj.pointsArray
 }
 
 function readFace(position, data, vn)
