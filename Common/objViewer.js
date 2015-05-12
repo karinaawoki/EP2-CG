@@ -236,7 +236,7 @@ window.onload = function init() {
             }
             else if(transformacao == "t")
             {
-                var desloc -1*= desl[1]/220.0;
+                var desloc = -1* desl[1]/220.0;
                 translacao(direcao, desloc);
             }
             else if(transformacao == "r")
@@ -362,7 +362,11 @@ window.onload = function init() {
         break;
 
         case 27: // ESC
-          alert("esc");
+          // Retirar seleção de objetos
+          direcao = "n";
+          transformacao = "n";
+          selected = -1;
+          numObject = -1;
         break;
 
         
