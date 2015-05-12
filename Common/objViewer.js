@@ -9,7 +9,7 @@ var numVertices  = 36;
 //var pointsArray  = [];
 //var normalsArray = [];
 
-var numObject = 0;
+var numObject = -1;
 var transformacao = "n";
 // n = nada
 // t = transl
@@ -254,16 +254,11 @@ window.onload = function init() {
         shiftPressed = event.shiftKey;
         aPressed = event.aKey;
 
-
+        var X = event.clientX;
+        var Y = event.clientY;
         ///ROTAÇÃO////
-        if (numObject<0)
+        if (numObject<0 && (X!=pointerPos[0] || Y!=pointerPos[1]))
         {
-
-            var X = event.clientX;
-            var Y = event.clientY;
-            
-            
-
             var z1 = 0;
             if(pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1] <= (radius*radius)/2) z1 = Math.sqrt(radius*radius - (pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1]));
             else z1 = ((radius*radius/2))/Math.sqrt(pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1]);
