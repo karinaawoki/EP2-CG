@@ -236,12 +236,12 @@ window.onload = function init() {
             }
             else if(transformacao == "t")
             {
-                var desloc = desl[1]/220.0;
+                var desloc -1*= desl[1]/220.0;
                 translacao(direcao, desloc);
             }
             else if(transformacao == "r")
             {
-                var angulo = desl[1]/70.0;
+                var angulo = -1*desl[1]/70.0;
                 rotacao(direcao, angulo);
             }
         }
