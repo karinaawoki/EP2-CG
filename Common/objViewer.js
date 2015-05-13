@@ -286,7 +286,7 @@ window.onload = function init() {
                 }
 
                 if (far2 - near2 < 1) break;
-                if (far2 - near2 > 32) break;
+                if (far2 - near2 > 16) break;
 
                 far = far2;
                 near = near2;
