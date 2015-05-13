@@ -524,7 +524,7 @@ function escala(eixo, aumento)
 function render(obj) {
     
     gl.clear( gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
+    alert("oiee");
     var wrapper = document.getElementById("gl-wrapper"); 
     var ratio = wrapper.clientHeight/wrapper.clientWidth; 
 

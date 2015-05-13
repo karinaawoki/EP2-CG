@@ -234,6 +234,8 @@ function loadObjFile(data,objects) {
   meio = [(minX + maxX)/2.0, (minY + maxY)/2.0, (minZ + maxZ)/2.0];  
   diam.push(Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)));
 
+  //centraliza(objPoints, meio);
+
   var obj = {
     pointsArray: objPoints,
     normalsArray: objNormals,
@@ -246,6 +248,16 @@ function loadObjFile(data,objects) {
 
   objects.push(obj);
 
+}
+
+function centraliza(obj, center)
+{
+  for(var i = 0; i<obj.length; i++)
+  {
+    obj[i][0] = obj[i][0] - center[0];
+    obj[i][1] = obj[i][1] - center[1];
+    obj[i][2] = obj[i][2] - center[2];
+  }
 }
 
 function calculaDiametro(obj)
