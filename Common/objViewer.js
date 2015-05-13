@@ -221,8 +221,6 @@ window.onload = function init() {
         shiftPressed = event.shiftKey;
         aPressed = event.aKey;
 
-        console.log(event.button);
-
         switch (event.button) {
             case 0:
                 direcao = "n";
