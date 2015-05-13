@@ -85,29 +85,29 @@ var far = 1;
 var flag = true;
 
 // generate a quadrilateral with triangles
-function quad(a, b, c, d) 
+function quad(objPoints, objNormals, a, b, c, d) 
 {
     var t1 = subtract(vertices[b], vertices[a]);
     var t2 = subtract(vertices[c], vertices[b]);
     var normal = vec4(cross(t1, t2), 0);
 
-    pointsArray.push(vertices[a]); 
-    normalsArray.push(normal); 
+    objPoints.push(vertices[a]); 
+    objNormals.push(normal); 
 
-    pointsArray.push(vertices[b]); 
-    normalsArray.push(normal); 
+    objPoints.push(vertices[b]); 
+    objNormals.push(normal); 
      
-    pointsArray.push(vertices[c]); 
-    normalsArray.push(normal);   
+    objPoints.push(vertices[c]); 
+    objNormals.push(normal);   
      
-    pointsArray.push(vertices[a]);  
-    normalsArray.push(normal); 
+    objPoints.push(vertices[a]);  
+    objNormals.push(normal); 
      
-    pointsArray.push(vertices[c]); 
-    normalsArray.push(normal); 
+    objPoints.push(vertices[c]); 
+    objNormals.push(normal); 
      
-    pointsArray.push(vertices[d]); 
-    normalsArray.push(normal);  
+    objPoints.push(vertices[d]); 
+    objNormals.push(normal);  
 
     //adicionando as faces
     faces.push([a, b, c]);

@@ -89,7 +89,7 @@ function loadObjFile(data,objects) {
           {
             lengthAux+=6;
             v4 = readFace(p1+1, data, 0);
-            quad(v1-1, v2-1, v3-1, v4-1);
+            quad(objPoints, objNormals, v1-1, v2-1, v3-1, v4-1);
           }
 
           //face com 3 vertices
