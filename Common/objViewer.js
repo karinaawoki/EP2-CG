@@ -4,10 +4,7 @@ var gl;
 
 var numVertices  = 36;
 
-//var pointsArray  = [];
-//var normalsArray = [];
-
-var numObject = 0;
+var numObject = -1;
 var transformacao = "n";
 // n = nada
 // t = transl
@@ -29,7 +26,7 @@ var diam = [];
 var lengthObjects = [];
 var meio = [];
 var selected = -1;
-//var normalsArrayCopy  = [];
+var Q;
 var normalsByVertices = []; // blaa[vertice] = [[face, normal], [face, normal]]
 var faces   = [];           // blaa[face] = [vert, vert, vert]
 var normals = [];
@@ -115,6 +112,7 @@ function quad(a, b, c, d)
 }
 
 window.onload = function init() {
+    Q = new Quaternion(1,vec3(0,0,0)); //Quaternio que acumulará as rotações
 
     canvas = document.getElementById( "gl-canvas" );
     
@@ -131,18 +129,12 @@ window.onload = function init() {
     //  load shaders and initialize attribute buffers
     program = initShaders( gl, "vertex-shader", "fragment-shader" );
     gl.useProgram( program );
-    
-    // draw simple cube for starters
-    //AQUI colorCube();
-    // create vertex and normal buffers
-    //createBuffers();
+
     eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
                cradius * Math.sin(ctheta) * Math.sin(cphi), 
                cradius * Math.cos(ctheta));
 
     var radius = 1;
-    //if(znear - zfar > 0) radius = znear-zfar;
-    //else radius = zfar - znear;
 
     // create light components
     ambientProduct = mult(lightAmbient, materialAmbient);
@@ -162,15 +154,11 @@ window.onload = function init() {
         mouseClicado = 1;
 
         if(event.button == 2){ 
-            console.log("oe");
-            var vp_right = canvas.width;
-            var vp_top = canvas.height;
-            //var can_x;
-            //var can_y;
+            var width = canvas.width;                 
+            var height = canvas.height;
 
-            var X = (event.clientX * (2/vp_right)) - 1;
-            // O ponto (0, 0) no canvas e o conto superior esquerdo.
-            var Y = 1 - (event.clientY * (2/vp_top));
+            var X = (event.clientX * (2/width)) - 1;
+            var Y = 1 - (event.clientY * (2/height));
 
             pointerPosZ = [X,Y];
         }
@@ -243,17 +231,10 @@ window.onload = function init() {
                 if (numObject<0)
                 {
 
-                    //var X = event.clientX;
-                    //var Y = event.clientY;  
-
-                    var vp_right = canvas.width;
-                    var vp_top = canvas.height;
-                    //var can_x;
-                    //var can_y;
-
-                    var X = (event.clientX * (2/vp_right)) - 1;
-                    // O ponto (0, 0) no canvas e o conto superior esquerdo.
-                    var Y = 1 - (event.clientY * (2/vp_top));
+                    var width = canvas.width;
+                    var height = canvas.height;
+                    var X = (event.clientX * (2/width)) - 1;
+                    var Y = 1 - (event.clientY * (2/height));
 
                     var z1 = 0;
                     if(pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1] <= (radius*radius)/2) z1 = Math.sqrt(radius*radius - (pointerPos[0]*pointerPos[0] + pointerPos[1]*pointerPos[1]));
@@ -264,78 +245,55 @@ window.onload = function init() {
                     else z2 = ((radius*radius/2))/Math.sqrt(X*X + Y*Y);
 
                     var v1 = normalize(vec3(pointerPos[0],pointerPos[1],z1));
-                    console.log("v1 " + v1);
                     var v2 = normalize(vec3(X,Y,z2));
-                    console.log("v2 " + v2);
 
 
                     if(v1[0] == v2[0] && v1[1] == v2[1] && v1[2] == v2[2]) var N = vec3(1.0,0.0,0.0);
                     else{
-                        var N = normalize(cross(v1,v2));
-                        console.log("N " + N);                
+                        var N = normalize(cross(v1,v2));         
                     }
 
 
-                    var theta = 50* Math.acos(dot(v1,v2));
-                    console.log("theta " + theta);
+                    var theta = 10* Math.acos(dot(v1,v2));
 
-                    var Q = new Quaternion(Math.cos(radians(theta/2)),scale2(Math.sin(radians(theta/2)),N));
-                    Q = normalize(Q);
-                    console.log("Q "+Q.s + Q.v );
+                    var newQ = new Quaternion(Math.cos(radians(theta/2)),scale2(Math.sin(radians(theta/2)),N));
+                    newQ = normalize(newQ);
 
+                    Q = Q.mult(newQ);
 
-                    var eye2 = new Quaternion(0,eye);
-                    var at2 = new Quaternion(0,at);
-                    var up2 = new Quaternion(0,up);
-
-
-                    eye2 = Q.mult(eye2.mult(Q.conjugate()));
-                    up2 = Q.mult(up2.mult(Q.conjugate()));
-
-                    eye = eye2.v;
-                    up = up2.v;
-                    /////////////
                 }                    
-                //alert('Left Mouse button pressed.');
                 break;
             case 2:
-                // Zoom in and zoom out.
-                var vp_right = canvas.width;
-                var vp_top = canvas.height;
-                //var can_x;
-                //var can_y;
 
-                var X = (event.clientX * (2/vp_right)) - 1;
-                // O ponto (0, 0) no canvas e o conto superior esquerdo.
-                var Y = 1 - (event.clientY * (2/vp_top));
+                var width = canvas.width;
+                var height = canvas.height;
+
+                var X = (event.clientX * (2/width)) - 1;
+                var Y = 1 - (event.clientY * (2/height));
 
                 var dx = pointerPosZ[0] - X;
                 var dy = pointerPosZ[1] - Y;
                 var dist = Math.sqrt(dx*dx + dy*dy);
 
-                var new_near = near, new_far = far;
+                var near2 = near; 
+                var far2 = far;
 
-                if ((X >= pointerPosZ[0] && Y >= pointerPosZ[1]) ||
-                    (X <= pointerPosZ[0] && Y >= pointerPosZ[1])) {
-                    // zoomCoords[2] = zoomCoords[2] + dist;
-                    new_far  += dist/2;
-                    new_near -= dist/2;
+                if ((X >= pointerPosZ[0] && Y >= pointerPosZ[1]) || (X <= pointerPosZ[0] && Y >= pointerPosZ[1])) {
+                    far2  += dist/2;
+                    near2 -= dist/2;
                 }
                 else {
-                    // zoomCoords[2] = zoomCoords[2] - dist;
-                    new_far  -= dist/2;
-                    new_near += dist/2;
+                    far2  -= dist/2;
+                    near2 += dist/2;
                 }
 
-                if (new_far - new_near < 1){console.log("po"); break; }
-                if (new_far - new_near > 32){console.log("vei"); break;}
+                if (far2 - near2 < 1) break;
+                if (far2 - near2 > 32) break;
 
-                far = new_far;
-                near = new_near;
-                console.log("near: " + near + " far: " + far);
+                far = far2;
+                near = near2;
                 cradius = far-near;
 
-                // create eye
                 eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
                            cradius * Math.sin(ctheta) * Math.sin(cphi),
                            cradius * Math.cos(ctheta));
@@ -499,7 +457,6 @@ function translacao(eixo, aumento)
     {
         for(var i = 0; i<objects[numObject].pointsArray.length; i++)
         {
-            if (numObject!=selected){ alert("ERROOOO!!");  }
             objects[numObject].pointsArray[i][0] = backupObj[i][0]+aumento;
         }
         objects[numObject].center[0] = backupCenter[0]+aumento;
@@ -573,20 +530,16 @@ function render(obj) {
     var wrapper = document.getElementById("gl-wrapper"); 
     var ratio = wrapper.clientHeight/wrapper.clientWidth; 
 
-            
-    //if (flag) theta[axis] += 2.0;
-            
-    /*eye = vec3(cradius * Math.sin(ctheta) * Math.cos(cphi),
-               cradius * Math.sin(ctheta) * Math.sin(cphi), 
-               cradius * Math.cos(ctheta));*/
+    var eye2 = new Quaternion(0,eye);
+    var up2 = new Quaternion(0,up);
 
-    console.log("EYE >>" + eye);
+    eye2 = Q.mult(eye2.mult(Q.conjugate())); //p' = QPQ^{-1} 
+    up2 = Q.mult(up2.mult(Q.conjugate()));
 
-    modelViewMatrix = lookAt(eye, at, up);
+    modelViewMatrix = lookAt(eye2.v, at, up2.v);
     
     modelViewMatrix = mult(modelViewMatrix,scale(vec3(ratio,ratio,ratio)));
-    //modelViewMatrix = mult(modelViewMatrix, translate());
-    //projectionMatrix = ortho(xleft, xright, ybottom, ytop, znear, zfar);
+
     projectionMatrix = perspective(45,1/ratio,near,far);
 
     gl.uniformMatrix4fv(modelViewMatrixLoc, false, flatten(modelViewMatrix));
@@ -597,9 +550,8 @@ function render(obj) {
             createBuffers(objects[i]);
             gl.drawArrays( gl.TRIANGLES, 0, (objects[i].pointsArray).length );
 
-            
         }else{
-            materialDiffuse   = vec4( 1.0, 0.4, 0.0, 1.0 );
+            materialDiffuse   = vec4( 1.0, 0.4, 0.0, 1.0 ); //Esse trecho muda a cor a ser pintada no objeto
             materialSpecular  = vec4( 1.0, 0.4, 0.0, 1.0 );
             diffuseProduct = mult(lightDiffuse, materialDiffuse);
             specularProduct = mult(lightSpecular, materialSpecular);
@@ -632,7 +584,8 @@ function render(obj) {
             ////////////Desenha Linhas //////////////
             
 
-            lightAmbient  = vec4(  0.2,  0.2,  0.2, 1.0 );
+            //Nesse pedaço volto as cores ao normal
+            lightAmbient  = vec4(  0.2,  0.2,  0.2, 1.0 ); 
             materialAmbient   = vec4( 1.0, 0.0, 1.0, 1.0 );
             ambientProduct = mult(lightAmbient, materialAmbient);
             gl.uniform4fv(gl.getUniformLocation(program, "ambientProduct"), flatten(ambientProduct));
@@ -650,7 +603,7 @@ function render(obj) {
     requestAnimFrame(render);
 }
 
-function createBuffersLines(obj) {
+function createBuffersLines(obj) { //Cria os eixos que saem do centro do objeto
    var aux = [
        vec4(obj.center[0], obj.center[1], obj.center[2], 1.0), 
        vec4(obj.center[0] + obj.diametro*0.6, obj.center[1], obj.center[2], 1.0),   
@@ -693,46 +646,17 @@ function createBuffers(obj) {
 
 
 function loadObject(data) {
-    // TO DO: convert strings into array of vertex and normal vectors
-
-
     var result = loadObjFile(data,objects);
-    var k = 0;
-    /*
-    for(var i = 0; i<lengthObjects.length; i++)
-    {
-        for(var j = 0; j<lengthObjects[i]; j++)
-        {
-            console.log("antes   " + pointsArray[j+k]);
-            pointsArray[j+k] = multVectorMatrix(pointsArray[j+k],scale(
-            vec3(2/diam[i],2/diam[i],2/diam[i])));
-            console.log("depois   " + pointsArray[j+k]);
-        }
-        k+=lengthObjects[i];
-    }
-    */
-
-    // TO DO: apply transformation to the object so that he is centered at the origin
 }
 
 
-
-
-
 // FUNÇÕES ADICIONADAS!
-
-
-
-
-
 
 function rotacaoMaisTRanslacao(Mrot ,ponto)
 {
     backupObj[ponto][0] -= objects[numObject].center[0];
     backupObj[ponto][1] -= objects[numObject].center[1];
     backupObj[ponto][2] -= objects[numObject].center[2];
-
-    //alert("centro" + objects[numObject].center);
 
     objects[numObject].pointsArray[ponto] = multVectorMatrix(backupObj[ponto], Mrot);
     
@@ -747,7 +671,7 @@ function rotacaoMaisTRanslacao(Mrot ,ponto)
 
 
 
-function multVectorMatrix(v, m)
+function multVectorMatrix(v, m) //Multiplica vetor por matrix
 {
     var vec = [];
     var sum ;
