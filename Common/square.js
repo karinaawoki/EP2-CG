@@ -15,11 +15,15 @@ var ponto1=-1, ponto2=-1;
 var fim = 0;
 var fechado = 0;
 
+var canvas, canvas2, canvas3;
+
+var t=[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]
+
 window.onload = function init()
 {
-    var canvas = document.getElementById( "gl-canvas" );
-    var canvas2 = document.getElementById("gl-canvas2");
-    var canvas3 = document.getElementById("gl-canvas3");
+    canvas = document.getElementById( "gl-canvas" );
+    canvas2 = document.getElementById("gl-canvas2");
+    canvas3 = document.getElementById("gl-canvas3");
       
 
 
@@ -81,34 +85,39 @@ window.onload = function init()
         }
     };
 
+    document.getElementById("ButtonB2").onclick = function(){
+        for(var i = 0; i<5; i++)
+        {
+            calculaSpline(i, verticesCanvas2, 2, canvas);
+            
+        }
+    };
+
 
 
     //CANVAS 2
-    canvas2.onmousedown = function(event){
+    canvas2.onmousedown = function(event)
+    {
         var pontoX2 = event.clientX-canvas2Posi;
         var pontoY2 = event.clientY-canvasAltura;
         var retorno = pontoExistente(pontoX2, pontoY2, verticesCanvas2);
         if(retorno != -1)
         { 
             ponto2 = retorno;
-            if(retorno == 0 && fechado == 0)
-            {
-                fim = 1;
-            }
+            if(retorno == 0 && fechado == 0) fim = 1;
         }
         else if(fechado == 0)
         {
             verticesCanvas2.push([pontoX2, pontoY2]);
             if (canvas2.getContext) {
                 var ctx = canvas2.getContext('2d');
-                ctx.fillStyle = "#00A308";
+                ctx.fillStyle = "#00Ahhh, valeu Jakson! A308";
                 ctx.strokeRect(pontoX2-raio, pontoY2-raio, raio*2, raio*2);
                 if(verticesCanvas2.length>1)
                     desenhaReta(canvas2, verticesCanvas2.length-2, verticesCanvas2.length-1, verticesCanvas2);
             }
             ponto2 = -1;
         }
-        
     }
     canvas2.onmousemove = function(event){
         if (ponto2 != -1) 
@@ -132,11 +141,8 @@ window.onload = function init()
                 fechado = 1;
                 desenhaReta(canvas2, verticesCanvas2.length-1, 0, verticesCanvas2);
             }
-
         }
         ponto2 = -1;
-        
-
     }
 
 
@@ -208,4 +214,31 @@ function desenhaReta(canvas, ini, fim, vert)
         ctx.lineTo(vert[fim][0], vert[fim][1]);
         ctx.stroke();
     }
+}
+
+
+function calculaSpline(t, vert, d, canvas)
+{
+    var retorno = [0,0];
+    for (var i = 0; i < vert; i++) {
+        retorno[0] += vert[i][0]*calculaBase(t, i, d);
+        retorno[1] += vert[i][1]*calculaBase(t, i, d);
+    }
+    if(canvas.getContext)
+    {
+        var ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#05A708";
+        ctx.strokeRect(retorno[0]-raio, retorno[1]-raio, raio*2, raio*2);
+    }
+    alert(retorno[0]-raio + ", " + retorno[1]-raio);
+}
+
+function calculaBase(t, k, d)
+{
+    if(d==0 && t[k]<=t && t<t[k+1]) return 1;
+    else if(d == 0) return 0;
+
+    return  (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
+        (t[k+d+1]-t)*calculaBase(t, k+1, d-1)/(t[k+d+1-t[k+1]]);
 }
