@@ -89,7 +89,7 @@ function loadObjFile(data,objects) {
           {
             lengthAux+=6;
             v4 = readFace(p1+1, data, 0);
-            quad(v1-1, v2-1, v3-1, v4-1);
+            quad(objPoints, objNormals,v1-1, v2-1, v3-1, v4-1);
           }
 
           //face com 3 vertices
@@ -234,6 +234,10 @@ function loadObjFile(data,objects) {
   meio = [(minX + maxX)/2.0, (minY + maxY)/2.0, (minZ + maxZ)/2.0];  
   diam.push(Math.sqrt((maxX - minX)*(maxX - minX) + (maxY - minY)*(maxY - minY) + (maxZ - minZ)*(maxZ - minZ)));
 
+  //centraliza(objPoints, meio);
+
+  //alert(meio);
+
   var obj = {
     pointsArray: objPoints,
     normalsArray: objNormals,
@@ -246,6 +250,16 @@ function loadObjFile(data,objects) {
 
   objects.push(obj);
 
+}
+
+function centraliza(obj, meio)
+{
+  for(var i = 0; i<obj.length; i++)
+  {
+    obj[i][0] -= center[0];
+    obj[i][1] -= center[1];
+    obj[i][2] -= center[2];
+  }
 }
 
 function calculaDiametro(obj)
