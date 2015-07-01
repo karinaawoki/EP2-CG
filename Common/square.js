@@ -88,7 +88,8 @@ window.onload = function init()
     document.getElementById("ButtonB2").onclick = function(){
         for(var i = 0; i<5; i++)
         {
-            calculaSpline(i, verticesCanvas2, 2, canvas);
+            alert(i);
+            calculaSpline(i, verticesCanvas2, 1, canvas);
             
         }
     };
@@ -236,11 +237,17 @@ function calculaSpline(t, vert, d, canvas)
 
 function calculaBase(t, k, d)
 {
-    if(d==0 && t[k]<=t && t<t[k+1]) return 1;
-    else if(d == 0) return 0;
+    if(d<=0 && t[k]<=t && t<t[k+1]) return 1;
+    else if(d <= 0) return 0;
     alert("lala");
-    alert("po" + (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
+    alert("po " + (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
         (t[k+d+1]-t)*calculaBase(t, k+1, d-1)/(t[k+d+1-t[k+1]]));
     return  (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
         (t[k+d+1]-t)*calculaBase(t, k+1, d-1)/(t[k+d+1-t[k+1]]);
+}
+
+
+function distancia()
+{
+    
 }
