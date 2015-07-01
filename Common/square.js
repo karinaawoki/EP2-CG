@@ -220,7 +220,7 @@ function desenhaReta(canvas, ini, fim, vert)
 function calculaSpline(t, vert, d, canvas)
 {
     var retorno = [0,0];
-    for (var i = 0; i < vert; i++) {
+    for (var i = 0; i < vert.length; i++) {
         retorno[0] += vert[i][0]*calculaBase(t, i, d);
         retorno[1] += vert[i][1]*calculaBase(t, i, d);
     }
@@ -238,7 +238,9 @@ function calculaBase(t, k, d)
 {
     if(d==0 && t[k]<=t && t<t[k+1]) return 1;
     else if(d == 0) return 0;
-
+    alert("lala");
+    alert("po" + (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
+        (t[k+d+1]-t)*calculaBase(t, k+1, d-1)/(t[k+d+1-t[k+1]]));
     return  (t-t[k])*calculaBase(t, k, d-1)/(t[k+d]-t[k]) + 
         (t[k+d+1]-t)*calculaBase(t, k+1, d-1)/(t[k+d+1-t[k+1]]);
 }
