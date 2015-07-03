@@ -1,7 +1,7 @@
 
 var points;
 
-var grau = 2;
+var grau1 = 2;
 
 var curva2 = [];
 var curva1 = [];
@@ -11,6 +11,7 @@ var canvasAltura = 12;
 
 var verticesCanvas1 = [];
 var verticesCanvas2 = [];
+var verticesCanvasParaCurva = [];
 
 var raio = 3;
 var raio_sensivel = raio + 2;
@@ -50,7 +51,7 @@ window.onload = function init()
                 if(verticesCanvas1.length>1)
                     desenhaReta(canvas, verticesCanvas1.length-2, 
                         verticesCanvas1.length-1, verticesCanvas1);
-            }
+            }1
             ponto1 = -1;
         }
         else ponto1 = retorno;
@@ -69,6 +70,7 @@ window.onload = function init()
 
 
 
+    // LIMPAR TELA
     document.getElementById("ButtonL1").onclick = function(){
         verticesCanvas1 = [];
         ponto1=-1;
@@ -77,7 +79,7 @@ window.onload = function init()
             var ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-    };
+    };1
 
 
     document.getElementById("ButtonL2").onclick = function(){
@@ -92,13 +94,20 @@ window.onload = function init()
         } 
     };
 
+
+
+    // CURVAS B-SPLINES
     document.getElementById("ButtonB2").onclick = function(){
         if(fechado == 1)
         {
+            for(var i = 0; i<grau2; i++)
+            {
+                
+            }
             curva2 = [];
             for(var i = precisao_Curva*0; i<(verticesCanvas2.length-1)*precisao_Curva; i++)
             {
-                calculaSpline(i/precisao_Curva, verticesCanvas2, grau, canvas2);
+                calculaSpline(i/precisao_Curva, verticesCanvas2, grau1, canvas2);
                 
             }
             desenhaCurvas(curva2, canvas2);
@@ -112,18 +121,19 @@ window.onload = function init()
 
     document.getElementById("ButtonB1").onclick = function(){
         curva1 = [];
-        tVetor = montaVetorNos(grau, verticesCanvas1);
+        grau1 = parseInt(document.getElementById("grau1").value);
 
+        tVetor = montaVetorNos(grau1, verticesCanvas1);
 
-        //grau = 1*document.getElementById("grau1").value;
-        //grau = 2;
         for(var i = precisao_Curva*0; i<=tVetor[tVetor.length-1]*precisao_Curva; i++)
         {
-            calculaSpline(i/precisao_Curva, verticesCanvas1, grau, canvas, curva1);
+            calculaSpline(i/precisao_Curva, verticesCanvas1, grau1, canvas, curva1);
         }
 
         desenhaCurvas(curva1, canvas);
     };
+
+
 
 
     //CANVAS 2
@@ -328,14 +338,14 @@ function calculaBase(t, k, d)
     return  res
 }
 
-function montaVetorNos(grau, vert)
+function montaVetorNos(grau1, vert)
 {
     tVetor = [];
     var num = 1;
-    var tamanho = grau + vert.length + 1;
+    var tamanho = grau1 + vert.length + 1;
     var zero = 0;
-    tamanho = tamanho -  (2*grau + 2);
-    for(var i = 0; i<=grau; i++) 
+    tamanho = tamanho -  (2*grau1 + 2);
+    for(var i = 0; i<=grau1; i++) 
     {
         tVetor.push(zero);
     }
@@ -345,7 +355,7 @@ function montaVetorNos(grau, vert)
         tVetor.push(num);
         num = num+1;
     }
-    for(var i = 0; i<=grau; i++) 
+    for(var i = 0; i<=grau1; i++) 
     {
         tVetor.push(num-1);
     }
