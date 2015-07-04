@@ -1,13 +1,17 @@
 
 var points;
 
-var grau1 = 2;
+var grau1 = 1;
+var grau2 = 1;
 
 var curva2 = [];
 var curva1 = [];
 var canvas1Posi = 372;
 var canvas2Posi = 12;
 var canvasAltura = 12;
+
+var bspline1 = 0;
+var bspline2 = 0;
 
 var verticesCanvas1 = [];
 var verticesCanvas2 = [];
@@ -23,8 +27,8 @@ var fechado = 0;
 
 var canvas, canvas2, canvas3;
 
-var oi = [];
-var tVetor = [];
+var tVetor1 = [];
+var tVetor2 = [];
 
 window.onload = function init()
 {
@@ -56,12 +60,13 @@ window.onload = function init()
         }
         else ponto1 = retorno;
     }
-    canvas.onmousemove = function(event){
+    canvas.onmousemove = function(event)
+    {
         if (ponto1 != -1) 
         {
             verticesCanvas1[ponto1][0] = event.clientX-canvas1Posi;
             verticesCanvas1[ponto1][1] = event.clientY-canvasAltura;
-            desenhaQuadrados(canvas, verticesCanvas1);
+            desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1);
         }
     }
     canvas.onmouseup = function(event){
@@ -79,9 +84,7 @@ window.onload = function init()
             var ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
-    };1
-
-
+    };
     document.getElementById("ButtonL2").onclick = function(){
         verticesCanvas2 = [];
         ponto2=-1;
@@ -100,14 +103,19 @@ window.onload = function init()
     document.getElementById("ButtonB2").onclick = function(){
         if(fechado == 1)
         {
-            for(var i = 0; i<grau2; i++)
+            bspline2 = 1;
+            grau2 = parseInt(document.getElementById("grau2").value);
+            for(var i = 0; i<verticesCanvas2.length; i++)
+                verticesCanvasParaCurva.push(verticesCanvas2[i]);
+            for(var i = 0; i<=grau2; i++)
             {
-                
+                verticesCanvasParaCurva.push(verticesCanvas2[i]);
             }
             curva2 = [];
-            for(var i = precisao_Curva*0; i<(verticesCanvas2.length-1)*precisao_Curva; i++)
+            tVetor1 = montaVetorNos(grau2, verticesCanvasParaCurva);
+            for(var i = precisao_Curva*0; i<(verticesCanvasParaCurva.length-1)*precisao_Curva; i++)
             {
-                calculaSpline(i/precisao_Curva, verticesCanvas2, grau1, canvas2);
+                calculaSpline(i/precisao_Curva, verticesCanvasParaCurva, grau2, canvas2, curva2);
                 
             }
             desenhaCurvas(curva2, canvas2);
@@ -119,18 +127,19 @@ window.onload = function init()
     };
 
 
-    document.getElementById("ButtonB1").onclick = function(){
+    document.getElementById("ButtonB1").onclick = function()
+    {
+        bspline1 = 1;
         curva1 = [];
         grau1 = parseInt(document.getElementById("grau1").value);
 
-        tVetor = montaVetorNos(grau1, verticesCanvas1);
+        tVetor1 = montaVetorNos(grau1, verticesCanvas1);
 
-        for(var i = precisao_Curva*0; i<=tVetor[tVetor.length-1]*precisao_Curva; i++)
+        for(var i = precisao_Curva*0; i<=tVetor1[tVetor1.length-1]*precisao_Curva; i++)
         {
             calculaSpline(i/precisao_Curva, verticesCanvas1, grau1, canvas, curva1);
         }
-
-        desenhaCurvas(curva1, canvas);
+        desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1);
     };
 
 
@@ -166,9 +175,12 @@ window.onload = function init()
         {
             verticesCanvas2[ponto2][0] = event.clientX-canvas2Posi;
             verticesCanvas2[ponto2][1] = event.clientY-canvasAltura;
-            desenhaQuadrados(canvas2, verticesCanvas2);
+            desenhaQuadrados(canvas2, verticesCanvas2, grau2, curva2, bspline2);
+
             if(fechado == 1)
+            {
                 desenhaReta(canvas2, verticesCanvas2.length-1, 0, verticesCanvas2);
+            }
         }
         fim = 0;
     }
@@ -197,10 +209,6 @@ window.onload = function init()
     if (canvas.getContext) {
         var ctx = canvas.getContext('2d');
         ctx.fillStyle = "#00A308";
-
-        //ctx.fillRect(25,25,100,100);
-        //ctx.clearRect(45,45,60,60);
-        //ctx.strokeRect(50,50,50,50);
     }
 
     render();
@@ -219,11 +227,9 @@ function pontoExistente(x, y, vert) {
         if(x>vert[i][0]-raio_sensivel && x<vert[i][0]+raio_sensivel &&
            y>vert[i][1]-raio_sensivel && y<vert[i][1]+raio_sensivel)
         {
-            //console.log("quad "+i);
             return i;
         }   
     }
-    //console.log("nada");
     return -1;
 }
 
@@ -244,7 +250,7 @@ function desenhaCurvas(curva, canvas)
     }
 }
 
-function desenhaQuadrados(canvas, vert)
+function desenhaQuadrados(canvas, vert, grau, curva, bspline)
 {
     if(canvas.getContext)
     {
@@ -259,6 +265,15 @@ function desenhaQuadrados(canvas, vert)
                 desenhaReta(canvas, i-1, i, vert);
             }
         }
+    }
+    if(bspline != 0)
+    {
+        curva = [];
+        for(var i = precisao_Curva*0; i<=tVetor1[tVetor1.length-1]*precisao_Curva; i++)
+        {
+            calculaSpline(i/precisao_Curva, vert, grau, canvas, curva);
+        }
+        desenhaCurvas(curva, canvas);
     }
 }
 
@@ -282,52 +297,35 @@ function calculaSpline(t, vert, d, canvas, curva)
         var base = calculaBase(t, i, d);
         retorno[0] += vert[i][0]*base;
         retorno[1] += vert[i][1]*base;
-        console.log("** " + retorno);
-        console.log("*** " + vert[i] + " t " + t);
     }
     curva.push([retorno[0], retorno[1]]);
-    //if(canvas.getContext)
-    //{
-    //    var ctx = canvas.getContext('2d');
-    //    ctx.fillStyle = "#220000";
-    //    ctx.strokeRect(retorno[0]-1, retorno[1]-1, 2, 2);
-    //}
 }
 
 function calculaBase(t, k, d)
 {
 
-    if(d<=0 && tVetor[k]<=t && t<tVetor[k+1]) 
+    if(d<=0 && tVetor1[k]<=t && t<tVetor1[k+1]) 
     {
-       // alert("reto 1");
         return 1;
     }
     else if(d <= 0) 
     {
-       // alert("reto 0");
         return 0;
     }
     
     var parte1;
-    console.log("k:"+k+" d:"+d+" v[k+d]:"+tVetor[k+d] + " t[k]"+tVetor[k]);
-    if(tVetor[k+d] != tVetor[k])
+    if(tVetor1[k+d] != tVetor1[k])
     {
-        //alert("parte1 não é zero");
-        parte1 = (t-tVetor[k])*calculaBase(t, k, d-1)/(tVetor[k+d]-tVetor[k]);
-        if(parte1!=0) console.log("parte1 não é zero: " +parte1);
-        else console.log("///////////////////////////////////////// 1");
+        parte1 = (t-tVetor1[k])*calculaBase(t, k, d-1)/(tVetor1[k+d]-tVetor1[k]);
     }
     else
     { 
         parte1 = 0;
     }
     var parte2;
-    if(tVetor[k+d+1] != tVetor[k+1]) 
+    if(tVetor1[k+d+1] != tVetor1[k+1]) 
     {
-        //alert("parte2 não é zero");
-        parte2 = (tVetor[k+d+1]-t)*calculaBase(t, k+1, d-1)/(tVetor[k+d+1]-tVetor[k+1]);
-        if(parte2!=0) console.log("parte2 não é zero: " +parte2);
-        else console.log("///////////////////////////////////////// 2");
+        parte2 = (tVetor1[k+d+1]-t)*calculaBase(t, k+1, d-1)/(tVetor1[k+d+1]-tVetor1[k+1]);
     }
     else 
     {
@@ -340,29 +338,29 @@ function calculaBase(t, k, d)
 
 function montaVetorNos(grau1, vert)
 {
-    tVetor = [];
+    tVetor1 = [];
     var num = 1;
     var tamanho = grau1 + vert.length + 1;
     var zero = 0;
     tamanho = tamanho -  (2*grau1 + 2);
     for(var i = 0; i<=grau1; i++) 
     {
-        tVetor.push(zero);
+        tVetor1.push(zero);
     }
     for(var i = 0; i<=tamanho; i++)
     {
 
-        tVetor.push(num);
+        tVetor1.push(num);
         num = num+1;
     }
     for(var i = 0; i<=grau1; i++) 
     {
-        tVetor.push(num-1);
+        tVetor1.push(num-1);
     }
-
-
-    console.log(tVetor);
-    console.log(tVetor.length);
-    return tVetor;
+    return tVetor1;
 }
 
+function montaVetorNos2(grau2, vert)
+{
+
+}
