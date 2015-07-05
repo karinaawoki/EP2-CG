@@ -363,13 +363,10 @@ function montaVetorNos2(grau, vert)
     tVetor2 = [];
     var tamanho = grau + vert.length;
 
-    tVetor2.push(0);
-    tamanho--;
-    for(var i = 1; i<tamanho; i++)
+    for(var i = 0; i<tamanho; i++)
     {
         tVetor2.push(i);
     }
-    for(var i = tVetor2.length-8; i<tamanho; i++)
-        tVetor2[i] -= 1;
+
     return tVetor2;
 }
