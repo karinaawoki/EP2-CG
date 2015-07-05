@@ -19,7 +19,7 @@ var verticesCanvasParaCurva = [];
 
 var raio = 3;
 var raio_sensivel = raio + 2;
-var precisao_Curva = 20;
+var precisao_Curva = 3;
 
 var ponto1=-1, ponto2=-1;
 var fim = 0;
@@ -103,6 +103,7 @@ window.onload = function init()
     document.getElementById("ButtonB2").onclick = function(){
         if(fechado == 1)
         {
+            verticesCanvasParaCurva = [];
             bspline2 = 1;
             grau2 = parseInt(document.getElementById("grau2").value);
             for(var i = 0; i<verticesCanvas2.length; i++)
@@ -135,10 +136,8 @@ window.onload = function init()
 
         tVetor1 = montaVetorNos(grau1, verticesCanvas1);
 
-        for(var i = precisao_Curva*0; i<=tVetor1[tVetor1.length-1]*precisao_Curva; i++)
-        {
-            calculaSpline(i/precisao_Curva, verticesCanvas1, grau1, canvas, curva1);
-        }
+ 
+        //curva1.push([verticesCanvas1[verticesCanvas1.length-1][0], verticesCanvas1[verticesCanvas1.length-1][2]]);
         desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1, tVetor1, verticesCanvas1);
     };
 
@@ -240,7 +239,8 @@ function desenhaCurvas(curva, canvas, vert)
         var ctx = canvas.getContext('2d');
         ctx.beginPath();
         ctx.moveTo(curva[0][0], curva[0][1]);
-        for (var i = 0; i < precisao_Curva*vert.length; i++) 
+ //       for (var i = precisao_Curva*2; i < curva.length - precisao_Curva; i++) 
+        for (var i = 0; i < curva.length; i++) 
         {
             ctx.lineTo(curva[i][0], curva[i][1]);
         }   
@@ -269,10 +269,11 @@ function desenhaQuadrados(canvas, vert, grau, curva, bspline, tVetor, vertAdicio
     if(bspline != 0)
     {
         curva = [];
-        for(var i = precisao_Curva*0; i<=tVetor[tVetor.length-1]*precisao_Curva; i++)
+        for(var i = precisao_Curva*0; i<=tVetor[tVetor.length-1]*precisao_Curva-1; i++)
         {
             calculaSpline(i/precisao_Curva, vertAdicionado, grau, canvas, curva);
         }
+        curva.push([vert[vert.length-1][0], vert[vert.length-1][1]]);
         desenhaCurvas(curva, canvas, vert);
     }
 }
@@ -365,7 +366,7 @@ function montaVetorNos(grau1, vert)
 function montaVetorNos2(grau, vert)
 {
     tVetor2 = [];
-    var tamanho = grau + vert.length;
+    var tamanho = grau + vert.length-1;
 
     for(var i = 0; i<tamanho; i++)
     {
