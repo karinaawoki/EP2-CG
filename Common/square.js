@@ -121,11 +121,7 @@ window.onload = function init()
             }
             curva2 = [];
             tVetor2 = montaVetorNos(grau2, verticesCanvasParaCurva);
-            for(var i = precisao_Curva*0; i<(tVetor2[tVetor2.length - 1])*precisao_Curva; i++)
-            {
-                calculaSpline(i/precisao_Curva, verticesCanvasParaCurva, grau2, canvas2, curva2);
-                
-            }
+            
             desenhaQuadrados(canvas2, verticesCanvas2, grau2, curva2, bspline2, tVetor2, verticesCanvasParaCurva, 2);
         }
         else
@@ -277,9 +273,28 @@ function desenhaQuadrados(canvas, vert, grau, curva, bspline, tVetor, vertAdicio
     {
         if (tipo == 1)
             desenha1();
-        else alert("oieee");
+        else 
+            desenha2();
     }
 }
+
+function desenha2()
+{
+    curva2 = [];
+    for(var i = 0; i<=tVetor2[tVetor2.length-1]*precisao_Curva; i++)
+    {
+        calculaSpline(i/precisao_Curva, verticesCanvasParaCurva, grau2, canvas2, curva2);
+    }
+    //curva2.push([verticesCanvas2[verticesCanvas2.length-1][0], verticesCanvas2[verticesCanvas2.length-1][1]]);
+    desenhaCurvas(curva2, canvas2, verticesCanvas2);
+    if(fechado == 1)
+    {
+        desenhaReta(canvas2, verticesCanvas2.length-1, 0, verticesCanvas2);
+    }
+}
+
+
+
 
 function desenha1()
 {
@@ -290,12 +305,6 @@ function desenha1()
     }
     curva1.push([verticesCanvas1[verticesCanvas1.length-1][0], verticesCanvas1[verticesCanvas1.length-1][1]]);
     desenhaCurvas(curva1, canvas, verticesCanvas1);
-}
-
-
-function desenha2()
-{
-
 }
 
 function desenhaReta(canvas, ini, fim, vert)
