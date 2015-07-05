@@ -66,7 +66,7 @@ window.onload = function init()
         {
             verticesCanvas1[ponto1][0] = event.clientX-canvas1Posi;
             verticesCanvas1[ponto1][1] = event.clientY-canvasAltura;
-            desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1);
+            desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1, tVetor1, verticesCanvas1);
         }
     }
     canvas.onmouseup = function(event){
@@ -112,13 +112,13 @@ window.onload = function init()
                 verticesCanvasParaCurva.push(verticesCanvas2[i]);
             }
             curva2 = [];
-            tVetor1 = montaVetorNos(grau2, verticesCanvasParaCurva);
-            for(var i = precisao_Curva*0; i<(verticesCanvasParaCurva.length-1)*precisao_Curva; i++)
+            tVetor2 = montaVetorNos(grau2, verticesCanvasParaCurva);
+            for(var i = precisao_Curva*0; i<(tVetor2[tVetor2.length - 1])*precisao_Curva; i++)
             {
                 calculaSpline(i/precisao_Curva, verticesCanvasParaCurva, grau2, canvas2, curva2);
                 
             }
-            desenhaCurvas(curva2, canvas2);
+            desenhaQuadrados(canvas2, verticesCanvas2, grau2, curva2, bspline2, tVetor2, verticesCanvasParaCurva);
         }
         else
         {
@@ -139,7 +139,7 @@ window.onload = function init()
         {
             calculaSpline(i/precisao_Curva, verticesCanvas1, grau1, canvas, curva1);
         }
-        desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1);
+        desenhaQuadrados(canvas, verticesCanvas1, grau1, curva1, bspline1, tVetor1, verticesCanvas1);
     };
 
 
@@ -175,7 +175,7 @@ window.onload = function init()
         {
             verticesCanvas2[ponto2][0] = event.clientX-canvas2Posi;
             verticesCanvas2[ponto2][1] = event.clientY-canvasAltura;
-            desenhaQuadrados(canvas2, verticesCanvas2, grau2, curva2, bspline2);
+            desenhaQuadrados(canvas2, verticesCanvas2, grau2, curva2, bspline2, tVetor2, verticesCanvasParaCurva);
 
             if(fechado == 1)
             {
@@ -233,14 +233,14 @@ function pontoExistente(x, y, vert) {
     return -1;
 }
 
-function desenhaCurvas(curva, canvas)
+function desenhaCurvas(curva, canvas, vert)
 {
     if(canvas.getContext)
     {
         var ctx = canvas.getContext('2d');
         ctx.beginPath();
         ctx.moveTo(curva[0][0], curva[0][1]);
-        for (var i = 0; i < curva.length-1; i++) 
+        for (var i = 0; i < precisao_Curva*vert.length; i++) 
         {
             ctx.lineTo(curva[i][0], curva[i][1]);
         }   
@@ -250,7 +250,7 @@ function desenhaCurvas(curva, canvas)
     }
 }
 
-function desenhaQuadrados(canvas, vert, grau, curva, bspline)
+function desenhaQuadrados(canvas, vert, grau, curva, bspline, tVetor, vertAdicionado)
 {
     if(canvas.getContext)
     {
@@ -269,11 +269,11 @@ function desenhaQuadrados(canvas, vert, grau, curva, bspline)
     if(bspline != 0)
     {
         curva = [];
-        for(var i = precisao_Curva*0; i<=tVetor1[tVetor1.length-1]*precisao_Curva; i++)
+        for(var i = precisao_Curva*0; i<=tVetor[tVetor.length-1]*precisao_Curva; i++)
         {
-            calculaSpline(i/precisao_Curva, vert, grau, canvas, curva);
+            calculaSpline(i/precisao_Curva, vertAdicionado, grau, canvas, curva);
         }
-        desenhaCurvas(curva, canvas);
+        desenhaCurvas(curva, canvas, vert);
     }
 }
 
@@ -360,7 +360,16 @@ function montaVetorNos(grau1, vert)
     return tVetor1;
 }
 
-function montaVetorNos2(grau2, vert)
-{
 
+
+function montaVetorNos2(grau, vert)
+{
+    tVetor2 = [];
+    var tamanho = grau + vert.length;
+
+    for(var i = 0; i<tamanho; i++)
+    {
+        tVetor2.push(i);
+    }
+    return tVetor2;
 }
